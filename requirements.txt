@@ -1,0 +1,4 @@
+colorama
+tabulate
+
+bambou==0.0.1
