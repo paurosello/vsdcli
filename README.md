@@ -43,6 +43,17 @@ Follow the CLI help menu:
 
     (pymodel-env) $ ./vsdk-cli -h
 
+Examples:
+
+    (pymodel-env) $ ./vsdk-cli list_enterprises --api https://135.227.220.152:8443/nuage/api/v3_0 -u csproot -p csproot --enterprise csp
+
+    (pymodel-env) $ export VSDK_PASSWORD=csproot
+    (pymodel-env) $ export VSDK_USERNAME=csproot
+    (pymodel-env) $ export VSDK_API_URL=https://135.227.220.152:8443/nuage/api/v3_0
+    (pymodel-env) $ export VSDK_ENTERPRISE=csp
+    (pymodel-env) $ ./vsdk-cli list_enterprises
+
+
 Available commands
 ------------------
 

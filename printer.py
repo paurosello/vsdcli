@@ -12,6 +12,8 @@ class Printer(object):
     """ Print output for VSD-CLI
     """
 
+
+
     @classmethod
     def colorprint(cls, message, color=''):
         """ Print a messsage in a specific color
@@ -24,13 +26,13 @@ class Printer(object):
         print(color + message + Style.RESET_ALL)
 
     @classmethod
-    def error(cls, message):
+    def raiseError(cls, message):
         """ Print an error message
 
             Args:
                 message: the message to print
         """
-        cls.colorprint('[Error] %s' % message, Fore.RED)
+        raise Exception('\033[91m[Error] %s\033[0m' % message)
 
 
     @classmethod

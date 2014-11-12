@@ -3,8 +3,7 @@
 import os
 import logging
 
-from models import *
-from models.utils import set_log_level
+from vsdk_V3_0 import *
 from printer import Printer
 
 
@@ -29,13 +28,33 @@ class VSDKCommands(object):
 
         if session is not None:
             user = session.user
-            (fetcher, user, enterprises, connection) = user.fetch_enterprises()
+            (fetcher, user, enterprises, connection) = user.enterprises_fetcher.fetch_objects()
 
             if enterprises is None:
-                Printer.error('Could not retrieve enterprises. Activate verbose mode for more information')
-            else:
-                Printer.success('%s enterprises found' % len(enterprises))
-                Printer.tabulate(enterprises)
+                Printer.raiseError('Could not retrieve enterprises. Activate verbose mode for more information')
+
+            Printer.success('%s enterprises found' % len(enterprises))
+            Printer.tabulate(enterprises)
+
+    @classmethod
+    def _get_enterprise(cls, enterprise_id, args):
+        """ Show enterprise information
+
+            Args:
+                enterprise_id: Identifier of the enterprise
+        """
+
+        session = cls._get_user_session(args)
+
+        enterprise = NUEnterprise()
+        enterprise.id = args.id
+
+        (enterprise, connection) = enterprise.fetch()
+
+        if connection.response.status_code >= 300:
+            Printer.raiseError('Could not find enterprise with id `%s`. Activate verbose mode for more information' % args.id)
+
+        return enterprise
 
     @classmethod
     def show_enterprise(cls, args):
@@ -45,19 +64,30 @@ class VSDKCommands(object):
                 id: Identifier of the enterprise
         """
 
-        session = cls._get_user_session(args)
+        enterprise = cls._get_enterprise(args.id, args)
 
-        if session is not None:
-            enterprise = NUEnterprise()
-            enterprise.id = args.id
+        Printer.success('Information about enterprise `%s`' % args.id)
+        Printer.tabulate(enterprise)
 
-            (enterprise, connection) = enterprise.fetch()
+    @classmethod
+    def list_domains(cls, args):
+        """ List all domains of a given enterprise
 
-            if connection.response.status_code >= 300:
-                Printer.error('Could not find enterprise with id `%s`. Activate verbose mode for more information' % args.id)
-            else:
-                Printer.success('Information about enterprise `%s`' % args.id)
-                Printer.tabulate(enterprise)
+            Args:
+                enterprise: Identifier of the enterprise
+
+            Returns:
+                Returns a list of all domains
+        """
+
+        enterprise = cls._get_enterprise(args.id, args)
+
+        (fetcher, user, domains, connection) = enterprise.domains_fetcher.fetch_objects()
+        if domains is None:
+            Printer.raiseError('Could not retrieve domains of enterprise %s. Activate verbose mode for more information' % enterprise.name)
+
+        Printer.success('%s domains found' % len(domains))
+        Printer.tabulate(domains)
 
     # General methods
 
@@ -86,8 +116,7 @@ class VSDKCommands(object):
         user = session.user
 
         if user.api_key is None:
-            Printer.error('Could not get a valid API key. Activate verbose mode for more information')
-            return None
+            Printer.raiseError('Could not get a valid API key. Activate verbose mode for more information')
 
         return session
 
