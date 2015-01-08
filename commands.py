@@ -91,7 +91,7 @@ class VSDCLICommand(object):
         except Exception, e:
             Printer.raiseError('Cannot create %s:\n%s' % (name, e))
 
-        Printer.success('Created %s with ID=%s' % (name, instance.id))
+        Printer.success('%s has been created with ID=%s' % (name, instance.id))
         Printer.tabulate(instance)
 
     @classmethod
@@ -119,7 +119,7 @@ class VSDCLICommand(object):
         except Exception, e:
             Printer.raiseError('Cannot update %s:\n%s' % (name, e))
 
-        Printer.success('Updated %s with ID=%s' % (name, instance.id))
+        Printer.success('%s with ID=%s has been updated' % (name, instance.id))
         Printer.tabulate(instance)
 
     @classmethod
@@ -139,7 +139,7 @@ class VSDCLICommand(object):
         except Exception, e:
             Printer.raiseError('Could not delete %s with id `%s`. Activate verbose mode for more information:\n%s' % (name, args.id, e))
 
-        Printer.success('Deleted %s with ID=%s' % (name, instance.id))
+        Printer.success('%s with ID=%s has been deleted' % (name, instance.id))
 
     ### General methods
 
@@ -157,12 +157,12 @@ class VSDCLICommand(object):
                 Returns an API Key if everything works fine
         """
 
-        # TOREMOVE: Development purpose
-        os.environ["VSDCLI_USERNAME"] = u"csproot"
-        os.environ["VSDCLI_PASSWORD"] = u"csproot"
-        os.environ["VSDCLI_API_URL"] = u"https://135.227.220.152:8443"
-        os.environ["VSDCLI_ENTERPRISE"] = u"csp"
-        # End
+        # TODO-CS: Remove. For Development purpose only
+        # os.environ["VSDCLI_USERNAME"] = u"csproot"
+        # os.environ["VSDCLI_PASSWORD"] = u"csproot"
+        # os.environ["VSDCLI_API_URL"] = u"https://135.227.220.152:8443"
+        # os.environ["VSDCLI_ENTERPRISE"] = u"csp"
+        # # End
 
         username = os.environ.get('VSDCLI_USERNAME', args.username)
         password = os.environ.get('VSDCLI_PASSWORD', args.password)
