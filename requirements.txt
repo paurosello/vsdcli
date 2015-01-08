@@ -1,5 +1,4 @@
 colorama
 tabulate
-
-bambou==0.0.1
-vsdk-api==V3-0-1
+git+http://github.mv.usa.alcatel.com/chserafi/bambou.git
+git+http://github.mv.usa.alcatel.com/chserafi/vsdk.git@3.1

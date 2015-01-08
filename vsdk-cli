@@ -9,29 +9,43 @@ if __name__ == '__main__':
 
     default_parser = argparse.ArgumentParser(description="CLI for VSD Software Development Kit", add_help=False)
     default_parser.add_argument('-v', '--verbose', help='Activate verbose mode', action='store_true')
-    default_parser.add_argument('-u', '--username', help='username to get an api key or set `VSDK_USERNAME` in your variable environment')
-    default_parser.add_argument('-p', '--password', help='password to get an api key or set `VSDK_PASSWORD` in your variable environment')
+    default_parser.add_argument('--username', help='username to get an api key or set `VSDK_USERNAME` in your variable environment')
+    default_parser.add_argument('--password', help='password to get an api key or set `VSDK_PASSWORD` in your variable environment')
     default_parser.add_argument('--api', help='URL of the API endpoint or set `VSDK_API_URL` in your variable environment')
-    default_parser.add_argument('-e', '--enterprise', help='Name of the enterprise to connect or set `VSDK_ENTERPRISE` in your variable environment')
+    default_parser.add_argument('--enterprise', help='Name of the enterprise to connect or set `VSDK_ENTERPRISE` in your variable environment')
 
-    parser = argparse.ArgumentParser(description="Usage: vsdk-cli {command} {arguments} ")
+    parser = argparse.ArgumentParser(description="Usage: vsdk-cli {command} {arguments}")
     subparsers = parser.add_subparsers(dest="command",
-                                       title='Command',
-                                       description='See commands description below',
-                                       help='list of available commands')
+                                       title='All available commands')
 
-    # List all enterprises command
-    subparser = subparsers.add_parser('list_enterprises', parents=[default_parser], help="List all enterprises for the current user")
+    # List Command
+    list_parser = subparsers.add_parser('list', parents=[default_parser], help="List all objects")
+    list_parser.add_argument('list', help="name of the object to list")
+    list_parser.add_argument('-in', dest='parent_infos', nargs=2, help="Specify the parent name and its uuid")
 
-    # Show enterprise
-    subparser = subparsers.add_parser('show_enterprise', parents=[default_parser], help="Another command")
-    subparser.add_argument('-i', '--id', help='Identifier of the enterprise to show', required=True)
+    # Show Command
+    show_parser = subparsers.add_parser('show', parents=[default_parser], help="Show a specific object details")
+    show_parser.add_argument('show', help="name of the object to show")
+    show_parser.add_argument('-i', '--id', dest='id', help='Identifier of the object to show', required=True)
 
-    # List all domains from an enterprise
-    subparser = subparsers.add_parser('list_domains', parents=[default_parser], help="List all enterprises for the current user")
-    subparser.add_argument('-i', '--id', help='Identifier of the enterprise', required=True)
+    # Create Command
+    create_parser = subparsers.add_parser('create', parents=[default_parser], help="Create a new object")
+    create_parser.add_argument('create', help='name of the object to create')
+    create_parser.add_argument('-in', dest='parent_infos', nargs=2, help="Specify the parent name and its uuid")
+    create_parser.add_argument('-p', '--params', dest='params', nargs='*', help='List of Key=Value parameters', required=True)
+
+    # Update Command
+    update_parser = subparsers.add_parser('update', parents=[default_parser], help="Update an existing object")
+    update_parser.add_argument('update', help='name of the object to update')
+    update_parser.add_argument('-i', '--id', dest='id', help='Identifier of the object to show', required=True)
+    update_parser.add_argument('-p', '--params', dest='params', nargs='*', help='List of Key=Value parameters', required=True)
+
+    # Delete Command
+    delete_parser = subparsers.add_parser('delete', parents=[default_parser], help="Delete an existing object")
+    delete_parser.add_argument('delete', help='name of the object to update')
+    delete_parser.add_argument('-i', '--id', dest='id', help='Identifier of the object to show', required=True)
 
     args = parser.parse_args()
 
-    from commands import VSDKCommands
-    VSDKCommands.execute(args)
+    from commands import VSDCLICommand
+    VSDCLICommand.execute(args)

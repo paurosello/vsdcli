@@ -1,7 +1,7 @@
 vsdk-cli
 ========
 
-CLI for VSDK, the VSD Python SDK
+CLI for VSD, the VSD Python SDK
 
 
 Setting up your Python environment
@@ -9,12 +9,14 @@ Setting up your Python environment
 
 Install your virtualenv
 
-    $ virtualenv --no-site-packages vsdkcli-env
+    $ virtualenv vsdkcli-env
+
+__Note__: If you are using a specific version of python, you can specify it using option `-p /usr/bin/python2.6` for instance.
 
 Activate your environment
 
     $ cd vsdkcli-env
-    $ source bin/activate
+    $ source bin/activate # Activate your environment here...
     (vsdkcli-env) $ ...
 
 
@@ -23,40 +25,47 @@ Installation
 
 NOTE: If it is not the case, please activate your Python environment first!
 
-    1) Install Bambou and VSDK
+    1) Install CLI dependencies
 
-    (pymodel-env) $ pip install git+ssh://github.mv.usa.alcatel.com/chserafi/bambou#egg=bambou
-    (pymodel-env) $ pip install url_to_your_vsdk_.tar.gz
+    (vsdkcli-env) $ pip install -r requirements.txt
 
-    2) Install CLI dependencies
+    2) Make sure your `vsdk-cli` command is executable
 
-    (pymodel-env) $ pip install -r requirements.txt
-
-    3) Make sure your `vsdk-cli` command is executable
-
-    (pymodel-env) $ chmod +x vsdk-cli
+    (vsdkcli-env) $ chmod +x vsdk-cli
 
 Usage
 -----
 
 Follow the CLI help menu:
 
-    (pymodel-env) $ ./vsdk-cli -h
+    (vsdkcli-env) $ ./vsdk-cli -h
 
 Examples:
 
-    (pymodel-env) $ ./vsdk-cli list_enterprises --api https://135.227.220.152:8443/nuage/api/v3_0 -u csproot -p csproot --enterprise csp
+    (vsdkcli-env) $ ./vsdk-cli list enterprises --api https://135.227.220.152:8443 -username csproot --password csproot --enterprise csp
 
-    (pymodel-env) $ export VSDK_PASSWORD=csproot
-    (pymodel-env) $ export VSDK_USERNAME=csproot
-    (pymodel-env) $ export VSDK_API_URL=https://135.227.220.152:8443/nuage/api/v3_0
-    (pymodel-env) $ export VSDK_ENTERPRISE=csp
-    (pymodel-env) $ ./vsdk-cli list_enterprises
+    (vsdkcli-env) $ export VSDK_PASSWORD=csproot
+    (vsdkcli-env) $ export VSDK_USERNAME=csproot
+    (vsdkcli-env) $ export VSDK_API_URL=https://135.227.220.152:8443
+    (vsdkcli-env) $ export VSDK_ENTERPRISE=csp
+
+    (vsdkcli-env) $ ./vsdk-cli list enterprises
+    (vsdkcli-env) $ ./vsdk-cli list vports -in subnet a3db271b-b4ab-45a2-995e-971bf9e761bb
+    (vsdkcli-env) $ ./vsdk-cli show domain --id 04850601-bebb-4b9b-acac-a31b455595a4
+
+    (vsdkcli-env) $ ./vsdk-cli create zone -in domain 04850601-bebb-4b9b-acac-a31b455595a4 -p name='Test Zone' IPType=IPV4 numberOfHostsInSubnets=4 maintenanceMode=DISABLED
+    (vsdkcli-env) $ ./vsdk-cli create enterprise -p name='My Company.com'
+
+    (vsdkcli-env) $ ./vsdk-cli update enterprise -i 26f67b33-3601-4cdf-8ed0-fba7116d0200 -p name='Example'
+    (vsdkcli-env) $ ./vsdk-cli update zone -i c4e96631-cfbc-4dcd-a4c3-b2937e5eab13 -p name='Danger Zone'
 
 
 Available commands
 ------------------
 
 Here are a list of available commands:
-* `list_enterprises`
-* `show_enterprise`
+* `list`
+* `show`
+* `create`
+* `update`
+* `delete`

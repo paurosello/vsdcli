@@ -1,95 +1,147 @@
 # -*- coding: utf-8 -*-
 
 import os
+import importlib
 import logging
 
-from vsdk_V3_0 import *
+from vsdk import *
 from printer import Printer
+from utils import Utils
+
+# TEMPORARY DATABASE
+OBJECTS = {'enterprise': 'NUEnterprise',
+           'zone': 'NUZone',
+           'domain': 'NUDomain',
+           'subnet': 'NUSubnet',
+           'vport': 'NUVPort'}
 
 
-class VSDKCommands(object):
-    """ VSDK CLI available commands
+class VSDCLICommand(object):
+    """ VSD CLI commands
+
     """
-
     @classmethod
     def execute(cls, args):
-        """docstring for execute"""
+        """ Execute CLI command """
 
         func = getattr(cls, args.command)
         del(args.command)
         func(args)
 
-    @classmethod
-    def list_enterprises(cls, args):
-        """ List all enterprises of the user
-        """
+    ### Commands
 
+    @classmethod
+    def list(cls, args):
+        """ List all objects
+
+        """
+        name = Utils.get_singular_name(args.list)
+        instance = cls._get_vsdk_instance(name)
         session = cls._get_user_session(args)
+        parent = cls._get_vsdk_parent(args.parent_infos, session)
 
-        if session is not None:
-            user = session.user
-            (fetcher, user, enterprises, connection) = user.enterprises_fetcher.fetch_objects()
+        try:
+            fetcher = getattr(parent, instance.get_fetcher_name())
+        except:
+            Printer.raiseError('%s failed fetching its %s' % (parent.get_remote_name(), instance.get_resource_name()))
 
-            if enterprises is None:
-                Printer.raiseError('Could not retrieve enterprises. Activate verbose mode for more information')
+        (fetcher, parent, objects, connection) = fetcher.fetch_objects()
 
-            Printer.success('%s enterprises found' % len(enterprises))
-            Printer.tabulate(enterprises)
+        if objects is None:
+            Printer.raiseError('Could not retrieve. Activate verbose mode for more information')
+
+        Printer.success('%s %s have been retrieved' % (len(objects), instance.get_resource_name()))
+        Printer.tabulate(objects)
 
     @classmethod
-    def _get_enterprise(cls, enterprise_id, args):
-        """ Show enterprise information
+    def show(cls, args):
+        """ Show object details
 
             Args:
-                enterprise_id: Identifier of the enterprise
+                uuid: Identifier of the object to show
         """
+        name = Utils.get_singular_name(args.show)
+        instance = cls._get_vsdk_instance(name)
+        instance.id = args.id
+        cls._get_user_session(args)
 
+        try:
+            (instance, connection) = instance.fetch()
+        except Exception, e:
+            Printer.raiseError('Could not find %s with id `%s`. Activate verbose mode for more information:\n%s' % (name, args.id, e))
+
+        Printer.success('%s with id %s has been retrieved' % (name, args.id))
+        Printer.tabulate(instance)
+
+    @classmethod
+    def create(cls, args):
+        """ Create an object
+
+        """
+        name = Utils.get_singular_name(args.create)
+        instance = cls._get_vsdk_instance(name)
         session = cls._get_user_session(args)
+        parent = cls._get_vsdk_parent(args.parent_infos, session)
+        attributes = cls._get_attributes(args.params)
 
-        enterprise = NUEnterprise()
-        enterprise.id = args.id
+        cls._fill_instance_with_attributes(instance, attributes)
 
-        (enterprise, connection) = enterprise.fetch()
+        try:
+            (instance, connection) = parent.add_child_object(instance)
+        except Exception, e:
+            Printer.raiseError('Cannot create %s:\n%s' % (name, e))
 
-        if connection.response.status_code >= 300:
-            Printer.raiseError('Could not find enterprise with id `%s`. Activate verbose mode for more information' % args.id)
-
-        return enterprise
-
-    @classmethod
-    def show_enterprise(cls, args):
-        """ Show enterprise information
-
-            Args:
-                id: Identifier of the enterprise
-        """
-
-        enterprise = cls._get_enterprise(args.id, args)
-
-        Printer.success('Information about enterprise `%s`' % args.id)
-        Printer.tabulate(enterprise)
+        Printer.success('Created %s with ID=%s' % (name, instance.id))
+        Printer.tabulate(instance)
 
     @classmethod
-    def list_domains(cls, args):
-        """ List all domains of a given enterprise
+    def update(cls, args):
+        """ Update an existing object
 
-            Args:
-                enterprise: Identifier of the enterprise
 
-            Returns:
-                Returns a list of all domains
         """
+        name = Utils.get_singular_name(args.update)
+        instance = cls._get_vsdk_instance(name)
+        instance.id = args.id
+        attributes = cls._get_attributes(args.params)
 
-        enterprise = cls._get_enterprise(args.id, args)
+        cls._get_user_session(args)
 
-        (fetcher, user, domains, connection) = enterprise.domains_fetcher.fetch_objects()
-        if domains is None:
-            Printer.raiseError('Could not retrieve domains of enterprise %s. Activate verbose mode for more information' % enterprise.name)
+        try:
+            (instance, connection) = instance.fetch()
+        except Exception, e:
+            Printer.raiseError('Could not find %s with id `%s`. Activate verbose mode for more information:\n%s' % (name, args.id, e))
 
-        Printer.success('%s domains found' % len(domains))
-        Printer.tabulate(domains)
+        cls._fill_instance_with_attributes(instance, attributes)
 
-    # General methods
+        try:
+            (instance, connection) = instance.save()
+        except Exception, e:
+            Printer.raiseError('Cannot update %s:\n%s' % (name, e))
+
+        Printer.success('Updated %s with ID=%s' % (name, instance.id))
+        Printer.tabulate(instance)
+
+    @classmethod
+    def delete(cls, args):
+        """ Delete an existing object
+
+
+        """
+        name = Utils.get_singular_name(args.delete)
+        instance = cls._get_vsdk_instance(name)
+        instance.id = args.id
+
+        cls._get_user_session(args)
+
+        try:
+            (instance, connection) = instance.delete()
+        except Exception, e:
+            Printer.raiseError('Could not delete %s with id `%s`. Activate verbose mode for more information:\n%s' % (name, args.id, e))
+
+        Printer.success('Deleted %s with ID=%s' % (name, instance.id))
+
+    ### General methods
 
     @classmethod
     def _get_user_session(cls, args):
@@ -105,12 +157,31 @@ class VSDKCommands(object):
                 Returns an API Key if everything works fine
         """
 
-        username = os.environ.get('VSDK_USERNAME', args.username)
-        password = os.environ.get('VSDK_PASSWORD', args.password)
-        api_url = os.environ.get('VSDK_API_URL', args.api)
-        enterprise = os.environ.get('VSDK_ENTERPRISE', args.enterprise)
+        # TOREMOVE: Development purpose
+        os.environ["VSDCLI_USERNAME"] = u"csproot"
+        os.environ["VSDCLI_PASSWORD"] = u"csproot"
+        os.environ["VSDCLI_API_URL"] = u"https://135.227.220.152:8443"
+        os.environ["VSDCLI_ENTERPRISE"] = u"csp"
+        # End
 
-        session = NUVSDSession(username=username, password=password, enterprise=enterprise, api_url=api_url)
+        username = os.environ.get('VSDCLI_USERNAME', args.username)
+        password = os.environ.get('VSDCLI_PASSWORD', args.password)
+        api_url = os.environ.get('VSDCLI_API_URL', args.api)
+        enterprise = os.environ.get('VSDCLI_ENTERPRISE', args.enterprise)
+
+        if username is None:
+            Printer.raiseError('Please provide a username using option --username or VSDCLI_USERNAME environment variable')
+
+        if password is None:
+            Printer.raiseError('Please provide a password using option --password or VSDCLI_PASSWORD environment variable')
+
+        if api_url is None:
+            Printer.raiseError('Please provide an API URL using option --api or VSDCLI_API_URL environment variable')
+
+        if enterprise is None:
+            Printer.raiseError('Please provide an enterprise using option --enterprise or VSDCLI_ENTERPRISE environment variable')
+
+        session = NUVSDSession(username=username, password=password, enterprise=enterprise, api_url=api_url + '/nuage/api/v3_1')
         session.start()
 
         user = session.user
@@ -132,3 +203,110 @@ class VSDKCommands(object):
             set_log_level(logging.DEBUG)
         else:
             set_log_level(logging.ERROR)
+
+    @classmethod
+    def _get_vsdk_instance(cls, name):
+        """ Get VSDK object instance according to a given name
+
+            Args:
+                name: the name of the object
+
+            Returns:
+                A VSDK object or raise an exception
+        """
+
+        if name in OBJECTS:
+            classname = OBJECTS[name]
+
+            vsdk = importlib.import_module('vsdk')
+            klass = None
+            try:
+                klass = getattr(vsdk, classname)
+            except:
+                Printer.raiseError('Unknown class %s' % classname)
+
+            return klass()
+
+        Printer.raiseError('Unknown object named %s' % name)
+
+    @classmethod
+    def _get_vsdk_parent(cls, parent_infos, session):
+        """ Get VSDK parent object if possible
+            Otherwise it will take the user in session
+
+            Args:
+                parent_infos: a list composed of (parent_name, uuid)
+
+            Returns:
+                A parent if possible otherwise the user in session
+
+        """
+        if parent_infos and len(parent_infos) == 2:
+            name = parent_infos[0]
+            uuid = parent_infos[1]
+
+            parent = cls._get_vsdk_instance(name)
+            parent.id = uuid
+
+            try:
+                (parent, connection) = parent.fetch()
+            except Exception, ex:
+                Printer.raiseError('Failed fetching parent %s with uuid %s\n%s' % (name, uuid, ex))
+
+            return parent
+
+        return session.user
+
+    @classmethod
+    def _get_attributes(cls, params):
+        """ Transforms a list of Key=Value
+            to a dictionary of attributes
+
+            Args:
+                params: list of Key=Value
+
+            Returns:
+                A dict
+
+        """
+        attributes = dict()
+
+        for param in params:
+            infos = param.split('=')
+
+            if len(infos) != 2:
+                Printer.raiseError('Parameter %s is not in key=value format' % param)
+
+            attribute_name = Utils.get_python_name(infos[0])
+            attributes[attribute_name] = infos[1]
+
+        return attributes
+
+    @classmethod
+    def _fill_instance_with_attributes(cls, instance, attributes):
+        """ Fill the given instance with attributes
+
+            Args:
+                instance: the instance to fill
+                attributes: the dictionary of attributes
+
+            Returns:
+                The instance filled or throw an exception
+
+        """
+
+        for attribute_name, attribute_value in attributes.iteritems():
+
+            attribute = instance.get_attribute_infos(attribute_name)
+            if attribute is None:
+                Printer.raiseError('Attribute %s could not be found in %s' % (attribute_name, name))
+
+            try:
+                value = attribute.attribute_type(attribute_value)
+                setattr(instance, attribute_name, value)
+            except Exception, e:
+                Printer.raiseError('Attribute %s could not be set with value %s\n%s' % (attribute_name, attribute_value, e))
+
+        # TODO-CS: Remove validation when we will have all attribute information from Swagger...
+        # if not instance.validate():
+        #     Printer.raiseError('Cannot validate %s for creation due to following errors\n%s' % (instance.get_remote_name(), instance.errors))
