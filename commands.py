@@ -25,6 +25,7 @@ class VSDCLICommand(object):
         """ Execute CLI command """
 
         func = getattr(cls, args.command)
+        setattr(args, "name", getattr(args, args.command))
         del(args.command)
         func(args)
 
@@ -35,7 +36,7 @@ class VSDCLICommand(object):
         """ List all objects
 
         """
-        name = Utils.get_singular_name(args.list)
+        name = Utils.get_singular_name(args.name)
         instance = cls._get_vsdk_instance(name)
         session = cls._get_user_session(args)
         parent = cls._get_vsdk_parent(args.parent_infos, session)
@@ -60,7 +61,7 @@ class VSDCLICommand(object):
             Args:
                 uuid: Identifier of the object to show
         """
-        name = Utils.get_singular_name(args.show)
+        name = Utils.get_singular_name(args.name)
         instance = cls._get_vsdk_instance(name)
         instance.id = args.id
         cls._get_user_session(args)
@@ -78,7 +79,7 @@ class VSDCLICommand(object):
         """ Create an object
 
         """
-        name = Utils.get_singular_name(args.create)
+        name = Utils.get_singular_name(args.name)
         instance = cls._get_vsdk_instance(name)
         session = cls._get_user_session(args)
         parent = cls._get_vsdk_parent(args.parent_infos, session)
@@ -100,7 +101,7 @@ class VSDCLICommand(object):
 
 
         """
-        name = Utils.get_singular_name(args.update)
+        name = Utils.get_singular_name(args.name)
         instance = cls._get_vsdk_instance(name)
         instance.id = args.id
         attributes = cls._get_attributes(args.params)
@@ -128,7 +129,7 @@ class VSDCLICommand(object):
 
 
         """
-        name = Utils.get_singular_name(args.delete)
+        name = Utils.get_singular_name(args.name)
         instance = cls._get_vsdk_instance(name)
         instance.id = args.id
 
@@ -157,7 +158,7 @@ class VSDCLICommand(object):
                 Returns an API Key if everything works fine
         """
 
-        # TODO-CS: Remove. For Development purpose only
+        # # TODO-CS: Remove. For Development purpose only
         # os.environ["VSDCLI_USERNAME"] = u"csproot"
         # os.environ["VSDCLI_PASSWORD"] = u"csproot"
         # os.environ["VSDCLI_API_URL"] = u"https://135.227.220.152:8443"
