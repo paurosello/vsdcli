@@ -1,16 +1,12 @@
 # -*- coding: utf-8 -*-
 
 import os
-import importlib
 import logging
 
 from vsdk import NUVSDSession
 from vsdk.utils import set_log_level
 from printer import Printer
-from utils import Utils
-
-# TEMPORARY DATABASE
-OBJECTS_MAPPING = {}
+from utils import Utils, VSDKUtils
 
 
 class VSDCLICommand(object):
@@ -34,9 +30,9 @@ class VSDCLICommand(object):
 
         """
         name = Utils.get_singular_name(args.name)
-        instance = cls._get_vsdk_instance(name)
+        instance = VSDKUtils.get_vsdk_instance(name)
         session = cls._get_user_session(args)
-        parent = cls._get_vsdk_parent(args.parent_infos, session)
+        parent = VSDKUtils.get_vsdk_parent(args.parent_infos, session.user)
 
         try:
             fetcher = getattr(parent, instance.get_fetcher_name())
@@ -59,7 +55,7 @@ class VSDCLICommand(object):
                 uuid: Identifier of the object to show
         """
         name = Utils.get_singular_name(args.name)
-        instance = cls._get_vsdk_instance(name)
+        instance = VSDKUtils.get_vsdk_instance(name)
         instance.id = args.id
         cls._get_user_session(args)
 
@@ -77,9 +73,9 @@ class VSDCLICommand(object):
 
         """
         name = Utils.get_singular_name(args.name)
-        instance = cls._get_vsdk_instance(name)
+        instance = VSDKUtils.get_vsdk_instance(name)
         session = cls._get_user_session(args)
-        parent = cls._get_vsdk_parent(args.parent_infos, session)
+        parent = VSDKUtils.get_vsdk_parent(args.parent_infos, session.user)
         attributes = cls._get_attributes(args.params)
 
         cls._fill_instance_with_attributes(instance, attributes)
@@ -99,7 +95,7 @@ class VSDCLICommand(object):
 
         """
         name = Utils.get_singular_name(args.name)
-        instance = cls._get_vsdk_instance(name)
+        instance = VSDKUtils.get_vsdk_instance(name)
         instance.id = args.id
         attributes = cls._get_attributes(args.params)
 
@@ -127,7 +123,7 @@ class VSDCLICommand(object):
 
         """
         name = Utils.get_singular_name(args.name)
-        instance = cls._get_vsdk_instance(name)
+        instance = VSDKUtils.get_vsdk_instance(name)
         instance.id = args.id
 
         cls._get_user_session(args)
@@ -201,74 +197,6 @@ class VSDCLICommand(object):
             set_log_level(logging.DEBUG)
         else:
             set_log_level(logging.ERROR)
-
-    @classmethod
-    def _load_vsdk_objects_mapping(cls):
-        """ Load vsdk objects mapping
-
-        """
-        vsdk = importlib.import_module('vsdk')
-        object_names = [name for name in dir(vsdk) if name != 'NUVSDSession' and name.startswith('NU') and not name.endswith('Fetcher')]
-
-        for object_name in object_names:
-            obj = getattr(vsdk, object_name)
-            OBJECTS_MAPPING[obj.get_remote_name()] = object_name
-
-    @classmethod
-    def _get_vsdk_instance(cls, name):
-        """ Get VSDK object instance according to a given name
-
-            Args:
-                name: the name of the object
-
-            Returns:
-                A VSDK object or raise an exception
-        """
-        if len(OBJECTS_MAPPING) == 0:
-            cls._load_vsdk_objects_mapping()
-
-        if name in OBJECTS_MAPPING:
-            classname = OBJECTS_MAPPING[name]
-
-            vsdk = importlib.import_module('vsdk')
-            klass = None
-            try:
-                vsdk = importlib.import_module('vsdk')
-                klass = getattr(vsdk, classname)
-            except:
-                Printer.raise_error('Unknown class %s' % classname)
-
-            return klass()
-
-        Printer.raise_error('Unknown object named %s' % name)
-
-    @classmethod
-    def _get_vsdk_parent(cls, parent_infos, session):
-        """ Get VSDK parent object if possible
-            Otherwise it will take the user in session
-
-            Args:
-                parent_infos: a list composed of (parent_name, uuid)
-
-            Returns:
-                A parent if possible otherwise the user in session
-
-        """
-        if parent_infos and len(parent_infos) == 2:
-            name = parent_infos[0]
-            uuid = parent_infos[1]
-
-            parent = cls._get_vsdk_instance(name)
-            parent.id = uuid
-
-            try:
-                (parent, connection) = parent.fetch()
-            except Exception, ex:
-                Printer.raise_error('Failed fetching parent %s with uuid %s\n%s' % (name, uuid, ex))
-
-            return parent
-
-        return session.user
 
     @classmethod
     def _get_attributes(cls, params):
