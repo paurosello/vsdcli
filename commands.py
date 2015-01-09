@@ -1,6 +1,7 @@
 # -*- coding: utf-8 -*-
 
 import os
+import pkg_resources
 import logging
 
 from vsdk import NUVSDSession
@@ -19,6 +20,7 @@ class VSDCLICommand(object):
 
         func = getattr(cls, args.command)
         cls._check_arguments(args)
+        cls._define_verbosity(args.verbose)
         func(args)
 
     ### Commands
@@ -147,8 +149,13 @@ class VSDCLICommand(object):
         os.environ["VSDCLI_PASSWORD"] = u"csproot"
         os.environ["VSDCLI_API_URL"] = u"https://135.227.220.152:8443"
         os.environ["VSDCLI_ENTERPRISE"] = u"csp"
-        os.environ["VSDCLI_JSON_OUTPUT"] = u"True"
         # End
+
+        try:
+            vsdk_version = pkg_resources.get_distribution('vsdk').version
+            args.api_version = vsdk_version.split('-', 1)[0]
+        except:
+            Printer.raise_error('Please install requirements using command line `pip install -r requirements.txt`.')
 
         args.username = args.username if args.username else os.environ.get('VSDCLI_USERNAME', None)
         args.password = args.password if args.password else os.environ.get('VSDCLI_PASSWORD', None)
@@ -184,7 +191,7 @@ class VSDCLICommand(object):
             Returns:
                 Returns an API Key if everything works fine
         """
-        api_url = '%s/nuage/api/v3_1' % args.api
+        api_url = '%s/nuage/api/v%s' % (args.api, args.api_version)
         session = NUVSDSession(username=args.username, password=args.password, enterprise=args.enterprise, api_url=api_url)
         session.start()
 
@@ -196,14 +203,15 @@ class VSDCLICommand(object):
         return session
 
     @classmethod
-    def _define_verbosity(cls, args):
+    def _define_verbosity(cls, verbose):
         """ Defines verbosity
 
             Args:
                 verbose: Boolean to activate or deactivate DEBUG mode
 
         """
-        if args.verbose:
+        if verbose:
+            Printer.info('Verbose mode is now activated.')
             set_log_level(logging.DEBUG)
         else:
             set_log_level(logging.ERROR)

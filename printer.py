@@ -43,6 +43,26 @@ class Printer(object):
         cls.colorprint('[Success] %s' % message, Fore.GREEN)
 
     @classmethod
+    def warn(cls, message):
+        """ Print a warning message
+
+            Args:
+                message: the message to print
+        """
+
+        cls.colorprint('[WARNING] %s' % message, Fore.YELLOW)
+
+    @classmethod
+    def info(cls, message):
+        """ Print a log message
+
+            Args:
+                message: the message to print
+        """
+
+        cls.colorprint('[INFO] %s' % message, Fore.CYAN)
+
+    @classmethod
     def output(cls, data, json=False):
         """ Print either json or tabulate data
 
