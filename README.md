@@ -40,14 +40,21 @@ Follow the CLI help menu:
 
     (vsdkcli-env) $ ./vsdcli -h
 
+You can define following environments variables:
+
+* `VSDCLI_USERNAME` user name
+* `VSDCLI_PASSWORD` user password
+* `VSDCLI_API_URL` API URL
+* `VSDCLI_ENTERPRISE` Enterprise name
+
 Examples:
 
     (vsdkcli-env) $ ./vsdcli list enterprises --api https://135.227.220.152:8443 -username csproot --password csproot --enterprise csp
 
-    (vsdkcli-env) $ export VSDK_PASSWORD=csproot
-    (vsdkcli-env) $ export VSDK_USERNAME=csproot
-    (vsdkcli-env) $ export VSDK_API_URL=https://135.227.220.152:8443
-    (vsdkcli-env) $ export VSDK_ENTERPRISE=csp
+    (vsdkcli-env) $ export VSDCLI_PASSWORD=csproot
+    (vsdkcli-env) $ export VSDCLI_USERNAME=csproot
+    (vsdkcli-env) $ export VSDCLI_API_URL=https://135.227.220.152:8443
+    (vsdkcli-env) $ export VSDCLI_ENTERPRISE=csp
 
     (vsdkcli-env) $ ./vsdcli list enterprises
     (vsdkcli-env) $ ./vsdcli list vports -in subnet a3db271b-b4ab-45a2-995e-971bf9e761bb
