@@ -1,7 +1,7 @@
 vsdcli
 ========
 
-CLI for VSD, the VSD Python SDK
+CLI for VSD Nuage
 
 
 Setting up your Python environment
