@@ -39,7 +39,7 @@ class VSDCLICommand(object):
         except:
             Printer.raise_error('%s failed fetching its %s' % (parent.get_remote_name(), instance.get_resource_name()))
 
-        (fetcher, parent, objects, connection) = fetcher.fetch_objects()
+        (fetcher, parent, objects, connection) = fetcher.fetch_objects(filter=args.filter)
 
         if objects is None:
             Printer.raise_error('Could not retrieve. Activate verbose mode for more information')

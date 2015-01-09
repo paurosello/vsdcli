@@ -23,6 +23,7 @@ if __name__ == '__main__':
     list_parser = subparsers.add_parser('list', parents=[default_parser], help="List all objects")
     list_parser.add_argument('list', help="name of the object to list")
     list_parser.add_argument('-in', dest='parent_infos', nargs=2, help="Specify the parent name and its uuid")
+    list_parser.add_argument('-f', '--filter', dest='filter', help="Specify a filter predicate")
 
     # Show Command
     show_parser = subparsers.add_parser('show', parents=[default_parser], help="Show a specific object details")
