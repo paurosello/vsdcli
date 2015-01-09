@@ -4,7 +4,8 @@ import os
 import importlib
 import logging
 
-from vsdk import NUVSDSession, set_log_level
+from vsdk import NUVSDSession
+from vsdk.utils import set_log_level
 from printer import Printer
 from utils import Utils
 
@@ -214,7 +215,7 @@ class VSDCLICommand(object):
             OBJECTS_MAPPING[obj.get_remote_name()] = object_name
 
     @classmethod
-    def _load_vsdk_objects(cls, name):
+    def _get_vsdk_instance(cls, name):
         """ Get VSDK object instance according to a given name
 
             Args:

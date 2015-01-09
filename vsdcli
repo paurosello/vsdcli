@@ -13,6 +13,7 @@ if __name__ == '__main__':
     default_parser.add_argument('--password', help='password to get an api key or set `VSDK_PASSWORD` in your variable environment')
     default_parser.add_argument('--api', help='URL of the API endpoint or set `VSDK_API_URL` in your variable environment')
     default_parser.add_argument('--enterprise', help='Name of the enterprise to connect or set `VSDK_ENTERPRISE` in your variable environment')
+    default_parser.add_argument('--json', help='Add this option get a JSON output', action='store_true')
 
     parser = argparse.ArgumentParser(description="Usage: vsdk-cli {command} {arguments}")
     subparsers = parser.add_subparsers(dest="command",
