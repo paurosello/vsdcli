@@ -18,8 +18,7 @@ class VSDCLICommand(object):
         """ Execute CLI command """
 
         func = getattr(cls, args.command)
-        setattr(args, "name", getattr(args, args.command))
-        del(args.command)
+        cls._check_arguments(args)
         func(args)
 
     ### Commands
@@ -138,6 +137,41 @@ class VSDCLICommand(object):
     ### General methods
 
     @classmethod
+    def _check_arguments(cls, args):
+        """ Check arguments and environment variables
+
+        """
+
+        # TODO-CS: Remove. For Development purpose only
+        os.environ["VSDCLI_USERNAME"] = u"csproot"
+        os.environ["VSDCLI_PASSWORD"] = u"csproot"
+        os.environ["VSDCLI_API_URL"] = u"https://135.227.220.152:8443"
+        os.environ["VSDCLI_ENTERPRISE"] = u"csp"
+        os.environ["VSDCLI_JSON_OUTPUT"] = u"True"
+        # End
+
+        args.username = args.username if args.username else os.environ.get('VSDCLI_USERNAME', None)
+        args.password = args.password if args.password else os.environ.get('VSDCLI_PASSWORD', None)
+        args.api = args.api if args.api else os.environ.get('VSDCLI_API_URL', None)
+        args.enterprise = args.enterprise if args.enterprise else os.environ.get('VSDCLI_ENTERPRISE', None)
+        args.json = True if os.environ.get('VSDCLI_JSON_OUTPUT') == 'True' else args.json
+
+        if args.username is None:
+            Printer.raise_error('Please provide a username using option --username or VSDCLI_USERNAME environment variable')
+
+        if args.password is None:
+            Printer.raise_error('Please provide a password using option --password or VSDCLI_PASSWORD environment variable')
+
+        if args.api is None:
+            Printer.raise_error('Please provide an API URL using option --api or VSDCLI_API_URL environment variable')
+
+        if args.enterprise is None:
+            Printer.raise_error('Please provide an enterprise using option --enterprise or VSDCLI_ENTERPRISE environment variable')
+
+        setattr(args, "name", getattr(args, args.command))
+        del(args.command)
+
+    @classmethod
     def _get_user_session(cls, args):
         """ Get api key
 
@@ -150,32 +184,8 @@ class VSDCLICommand(object):
             Returns:
                 Returns an API Key if everything works fine
         """
-
-        # TODO-CS: Remove. For Development purpose only
-        os.environ["VSDCLI_USERNAME"] = u"csproot"
-        os.environ["VSDCLI_PASSWORD"] = u"csproot"
-        os.environ["VSDCLI_API_URL"] = u"https://135.227.220.152:8443"
-        os.environ["VSDCLI_ENTERPRISE"] = u"csp"
-        # End
-
-        username = os.environ.get('VSDCLI_USERNAME', args.username)
-        password = os.environ.get('VSDCLI_PASSWORD', args.password)
-        api_url = os.environ.get('VSDCLI_API_URL', args.api)
-        enterprise = os.environ.get('VSDCLI_ENTERPRISE', args.enterprise)
-
-        if username is None:
-            Printer.raise_error('Please provide a username using option --username or VSDCLI_USERNAME environment variable')
-
-        if password is None:
-            Printer.raise_error('Please provide a password using option --password or VSDCLI_PASSWORD environment variable')
-
-        if api_url is None:
-            Printer.raise_error('Please provide an API URL using option --api or VSDCLI_API_URL environment variable')
-
-        if enterprise is None:
-            Printer.raise_error('Please provide an enterprise using option --enterprise or VSDCLI_ENTERPRISE environment variable')
-
-        session = NUVSDSession(username=username, password=password, enterprise=enterprise, api_url=api_url + '/nuage/api/v3_1')
+        api_url = '%s/nuage/api/v3_1' % args.api
+        session = NUVSDSession(username=args.username, password=args.password, enterprise=args.enterprise, api_url=api_url)
         session.start()
 
         user = session.user
@@ -191,8 +201,8 @@ class VSDCLICommand(object):
 
             Args:
                 verbose: Boolean to activate or deactivate DEBUG mode
-        """
 
+        """
         if args.verbose:
             set_log_level(logging.DEBUG)
         else:

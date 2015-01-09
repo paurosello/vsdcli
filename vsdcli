@@ -9,11 +9,11 @@ if __name__ == '__main__':
 
     default_parser = argparse.ArgumentParser(description="CLI for VSD Software Development Kit", add_help=False)
     default_parser.add_argument('-v', '--verbose', help='Activate verbose mode', action='store_true')
-    default_parser.add_argument('--username', help='username to get an api key or set `VSDK_USERNAME` in your variable environment')
-    default_parser.add_argument('--password', help='password to get an api key or set `VSDK_PASSWORD` in your variable environment')
-    default_parser.add_argument('--api', help='URL of the API endpoint or set `VSDK_API_URL` in your variable environment')
-    default_parser.add_argument('--enterprise', help='Name of the enterprise to connect or set `VSDK_ENTERPRISE` in your variable environment')
-    default_parser.add_argument('--json', help='Add this option get a JSON output', action='store_true')
+    default_parser.add_argument('--username', help='username to get an api key or set `VSDCLI_USERNAME` in your variable environment')
+    default_parser.add_argument('--password', help='password to get an api key or set `VSDCLI_PASSWORD` in your variable environment')
+    default_parser.add_argument('--api', help='URL of the API endpoint or set `VSDCLI_API_URL` in your variable environment')
+    default_parser.add_argument('--enterprise', help='Name of the enterprise to connect or set `VSDCLI_ENTERPRISE` in your variable environment')
+    default_parser.add_argument('--json', help='Add this option get a JSON output or set VSDCLI_JSON_OUTPUT="True"', action='store_true')
 
     parser = argparse.ArgumentParser(description="Usage: vsdk-cli {command} {arguments}")
     subparsers = parser.add_subparsers(dest="command",
