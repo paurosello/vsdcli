@@ -48,5 +48,7 @@ if __name__ == '__main__':
 
     args = parser.parse_args()
 
+    print args
+
     from commands import VSDCLICommand
     VSDCLICommand.execute(args)

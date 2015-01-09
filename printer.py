@@ -1,19 +1,16 @@
 # -*- coding: utf-8 -*-
 
-import os
-import logging
-
 from colorama import init
 init()
 from colorama import Fore, Style
 from tabulate import tabulate
+from pprint import pprint
+
 
 class Printer(object):
     """ Print output for VSD-CLI
+
     """
-
-
-
     @classmethod
     def colorprint(cls, message, color=''):
         """ Print a messsage in a specific color
@@ -26,14 +23,13 @@ class Printer(object):
         print(color + message + Style.RESET_ALL)
 
     @classmethod
-    def raiseError(cls, message):
+    def raise_error(cls, message):
         """ Print an error message
 
             Args:
                 message: the message to print
         """
         raise Exception('\033[91m[Error] %s\033[0m' % message)
-
 
     @classmethod
     def success(cls, message):
@@ -46,11 +42,33 @@ class Printer(object):
         cls.colorprint('[Success] %s' % message, Fore.GREEN)
 
     @classmethod
+    def output(cls, data, json=False):
+        """ Print either json or tabulate data
+
+            Args:
+                data: the data to display
+
+        """
+        if json:
+            cls.json(data)
+        else:
+            cls.tabulate(data)
+
+    @classmethod
+    def json(cls, data):
+        """ Print a json version of data
+
+            Args:
+                data: something to display
+        """
+        pprint(data)
+
+    @classmethod
     def tabulate(cls, data):
         """ Prints a tabulate version of data
 
             Args:
-                data: a list of objects to print
+                data: something to disply
         """
 
         if isinstance(data, str):

@@ -41,15 +41,15 @@ class VSDCLICommand(object):
         try:
             fetcher = getattr(parent, instance.get_fetcher_name())
         except:
-            Printer.raiseError('%s failed fetching its %s' % (parent.get_remote_name(), instance.get_resource_name()))
+            Printer.raise_error('%s failed fetching its %s' % (parent.get_remote_name(), instance.get_resource_name()))
 
         (fetcher, parent, objects, connection) = fetcher.fetch_objects()
 
         if objects is None:
-            Printer.raiseError('Could not retrieve. Activate verbose mode for more information')
+            Printer.raise_error('Could not retrieve. Activate verbose mode for more information')
 
         Printer.success('%s %s have been retrieved' % (len(objects), instance.get_resource_name()))
-        Printer.tabulate(objects)
+        Printer.output(objects, args.json)
 
     @classmethod
     def show(cls, args):
@@ -66,10 +66,10 @@ class VSDCLICommand(object):
         try:
             (instance, connection) = instance.fetch()
         except Exception, e:
-            Printer.raiseError('Could not find %s with id `%s`. Activate verbose mode for more information:\n%s' % (name, args.id, e))
+            Printer.raise_error('Could not find %s with id `%s`. Activate verbose mode for more information:\n%s' % (name, args.id, e))
 
         Printer.success('%s with id %s has been retrieved' % (name, args.id))
-        Printer.tabulate(instance)
+        Printer.output(instance, args.json)
 
     @classmethod
     def create(cls, args):
@@ -87,10 +87,10 @@ class VSDCLICommand(object):
         try:
             (instance, connection) = parent.add_child_object(instance)
         except Exception, e:
-            Printer.raiseError('Cannot create %s:\n%s' % (name, e))
+            Printer.raise_error('Cannot create %s:\n%s' % (name, e))
 
         Printer.success('%s has been created with ID=%s' % (name, instance.id))
-        Printer.tabulate(instance)
+        Printer.output(instance, args.json)
 
     @classmethod
     def update(cls, args):
@@ -108,17 +108,17 @@ class VSDCLICommand(object):
         try:
             (instance, connection) = instance.fetch()
         except Exception, e:
-            Printer.raiseError('Could not find %s with id `%s`. Activate verbose mode for more information:\n%s' % (name, args.id, e))
+            Printer.raise_error('Could not find %s with id `%s`. Activate verbose mode for more information:\n%s' % (name, args.id, e))
 
         cls._fill_instance_with_attributes(instance, attributes)
 
         try:
             (instance, connection) = instance.save()
         except Exception, e:
-            Printer.raiseError('Cannot update %s:\n%s' % (name, e))
+            Printer.raise_error('Cannot update %s:\n%s' % (name, e))
 
         Printer.success('%s with ID=%s has been updated' % (name, instance.id))
-        Printer.tabulate(instance)
+        Printer.output(instance, args.json)
 
     @classmethod
     def delete(cls, args):
@@ -135,7 +135,7 @@ class VSDCLICommand(object):
         try:
             (instance, connection) = instance.delete()
         except Exception, e:
-            Printer.raiseError('Could not delete %s with id `%s`. Activate verbose mode for more information:\n%s' % (name, args.id, e))
+            Printer.raise_error('Could not delete %s with id `%s`. Activate verbose mode for more information:\n%s' % (name, args.id, e))
 
         Printer.success('%s with ID=%s has been deleted' % (name, instance.id))
 
@@ -168,16 +168,16 @@ class VSDCLICommand(object):
         enterprise = os.environ.get('VSDCLI_ENTERPRISE', args.enterprise)
 
         if username is None:
-            Printer.raiseError('Please provide a username using option --username or VSDCLI_USERNAME environment variable')
+            Printer.raise_error('Please provide a username using option --username or VSDCLI_USERNAME environment variable')
 
         if password is None:
-            Printer.raiseError('Please provide a password using option --password or VSDCLI_PASSWORD environment variable')
+            Printer.raise_error('Please provide a password using option --password or VSDCLI_PASSWORD environment variable')
 
         if api_url is None:
-            Printer.raiseError('Please provide an API URL using option --api or VSDCLI_API_URL environment variable')
+            Printer.raise_error('Please provide an API URL using option --api or VSDCLI_API_URL environment variable')
 
         if enterprise is None:
-            Printer.raiseError('Please provide an enterprise using option --enterprise or VSDCLI_ENTERPRISE environment variable')
+            Printer.raise_error('Please provide an enterprise using option --enterprise or VSDCLI_ENTERPRISE environment variable')
 
         session = NUVSDSession(username=username, password=password, enterprise=enterprise, api_url=api_url + '/nuage/api/v3_1')
         session.start()
@@ -185,7 +185,7 @@ class VSDCLICommand(object):
         user = session.user
 
         if user.api_key is None:
-            Printer.raiseError('Could not get a valid API key. Activate verbose mode for more information')
+            Printer.raise_error('Could not get a valid API key. Activate verbose mode for more information')
 
         return session
 
@@ -224,7 +224,6 @@ class VSDCLICommand(object):
             Returns:
                 A VSDK object or raise an exception
         """
-
         if len(OBJECTS_MAPPING) == 0:
             cls._load_vsdk_objects_mapping()
 
@@ -237,11 +236,11 @@ class VSDCLICommand(object):
                 vsdk = importlib.import_module('vsdk')
                 klass = getattr(vsdk, classname)
             except:
-                Printer.raiseError('Unknown class %s' % classname)
+                Printer.raise_error('Unknown class %s' % classname)
 
             return klass()
 
-        Printer.raiseError('Unknown object named %s' % name)
+        Printer.raise_error('Unknown object named %s' % name)
 
     @classmethod
     def _get_vsdk_parent(cls, parent_infos, session):
@@ -265,7 +264,7 @@ class VSDCLICommand(object):
             try:
                 (parent, connection) = parent.fetch()
             except Exception, ex:
-                Printer.raiseError('Failed fetching parent %s with uuid %s\n%s' % (name, uuid, ex))
+                Printer.raise_error('Failed fetching parent %s with uuid %s\n%s' % (name, uuid, ex))
 
             return parent
 
@@ -286,10 +285,10 @@ class VSDCLICommand(object):
         attributes = dict()
 
         for param in params:
-            infos = param.split('=')
+            infos = param.split('=', 1)
 
             if len(infos) != 2:
-                Printer.raiseError('Parameter %s is not in key=value format' % param)
+                Printer.raise_error('Parameter %s is not in key=value format' % param)
 
             attribute_name = Utils.get_python_name(infos[0])
             attributes[attribute_name] = infos[1]
@@ -308,19 +307,18 @@ class VSDCLICommand(object):
                 The instance filled or throw an exception
 
         """
-
         for attribute_name, attribute_value in attributes.iteritems():
 
             attribute = instance.get_attribute_infos(attribute_name)
             if attribute is None:
-                Printer.raiseError('Attribute %s could not be found in %s' % (attribute_name, instance.get_remote_name()))
+                Printer.raise_error('Attribute %s could not be found in %s' % (attribute_name, instance.get_remote_name()))
 
             try:
                 value = attribute.attribute_type(attribute_value)
                 setattr(instance, attribute_name, value)
             except Exception, e:
-                Printer.raiseError('Attribute %s could not be set with value %s\n%s' % (attribute_name, attribute_value, e))
+                Printer.raise_error('Attribute %s could not be set with value %s\n%s' % (attribute_name, attribute_value, e))
 
         # TODO-CS: Remove validation when we will have all attribute information from Swagger...
         # if not instance.validate():
-        #     Printer.raiseError('Cannot validate %s for creation due to following errors\n%s' % (instance.get_remote_name(), instance.errors))
+        #     Printer.raise_error('Cannot validate %s for creation due to following errors\n%s' % (instance.get_remote_name(), instance.errors))
