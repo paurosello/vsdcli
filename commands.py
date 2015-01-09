@@ -155,12 +155,12 @@ class VSDCLICommand(object):
                 Returns an API Key if everything works fine
         """
 
-        # # TODO-CS: Remove. For Development purpose only
-        # os.environ["VSDCLI_USERNAME"] = u"csproot"
-        # os.environ["VSDCLI_PASSWORD"] = u"csproot"
-        # os.environ["VSDCLI_API_URL"] = u"https://135.227.220.152:8443"
-        # os.environ["VSDCLI_ENTERPRISE"] = u"csp"
-        # # End
+        # TODO-CS: Remove. For Development purpose only
+        os.environ["VSDCLI_USERNAME"] = u"csproot"
+        os.environ["VSDCLI_PASSWORD"] = u"csproot"
+        os.environ["VSDCLI_API_URL"] = u"https://135.227.220.152:8443"
+        os.environ["VSDCLI_ENTERPRISE"] = u"csp"
+        # End
 
         username = os.environ.get('VSDCLI_USERNAME', args.username)
         password = os.environ.get('VSDCLI_PASSWORD', args.password)
@@ -208,7 +208,7 @@ class VSDCLICommand(object):
 
         """
         vsdk = importlib.import_module('vsdk')
-        object_names = [name for name in dir(vsdk) if name.startswith('NU') and not name.endswith('Fetcher')]
+        object_names = [name for name in dir(vsdk) if name != 'NUVSDSession' and name.startswith('NU') and not name.endswith('Fetcher')]
 
         for object_name in object_names:
             obj = getattr(vsdk, object_name)

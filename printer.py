@@ -1,10 +1,10 @@
 # -*- coding: utf-8 -*-
 
+import json
 from colorama import init
 init()
 from colorama import Fore, Style
 from tabulate import tabulate
-from pprint import pprint
 
 
 class Printer(object):
@@ -61,7 +61,20 @@ class Printer(object):
             Args:
                 data: something to display
         """
-        pprint(data)
+        if isinstance(data, str):
+            print(data)
+
+        elif isinstance(data, dict):
+            print(json.dumps(data, indent=4))
+
+        elif isinstance(data, list):
+            results = []
+            for obj in data:
+                results.append(obj.to_dict())
+            print(json.dumps(results, indent=4))
+
+        else:
+            print(json.dumps(data.to_dict(), indent=4))
 
     @classmethod
     def tabulate(cls, data):
