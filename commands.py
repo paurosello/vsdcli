@@ -4,16 +4,12 @@ import os
 import importlib
 import logging
 
-from vsdk import *
+from vsdk import NUVSDSession, set_log_level
 from printer import Printer
 from utils import Utils
 
 # TEMPORARY DATABASE
-OBJECTS = {'enterprise': 'NUEnterprise',
-           'zone': 'NUZone',
-           'domain': 'NUDomain',
-           'subnet': 'NUSubnet',
-           'vport': 'NUVPort'}
+OBJECTS_MAPPING = {}
 
 
 class VSDCLICommand(object):
@@ -206,7 +202,19 @@ class VSDCLICommand(object):
             set_log_level(logging.ERROR)
 
     @classmethod
-    def _get_vsdk_instance(cls, name):
+    def _load_vsdk_objects_mapping(cls):
+        """ Load vsdk objects mapping
+
+        """
+        vsdk = importlib.import_module('vsdk')
+        object_names = [name for name in dir(vsdk) if name.startswith('NU') and not name.endswith('Fetcher')]
+
+        for object_name in object_names:
+            obj = getattr(vsdk, object_name)
+            OBJECTS_MAPPING[obj.get_remote_name()] = object_name
+
+    @classmethod
+    def _load_vsdk_objects(cls, name):
         """ Get VSDK object instance according to a given name
 
             Args:
@@ -216,12 +224,16 @@ class VSDCLICommand(object):
                 A VSDK object or raise an exception
         """
 
-        if name in OBJECTS:
-            classname = OBJECTS[name]
+        if len(OBJECTS_MAPPING) == 0:
+            cls._load_vsdk_objects_mapping()
+
+        if name in OBJECTS_MAPPING:
+            classname = OBJECTS_MAPPING[name]
 
             vsdk = importlib.import_module('vsdk')
             klass = None
             try:
+                vsdk = importlib.import_module('vsdk')
                 klass = getattr(vsdk, classname)
             except:
                 Printer.raiseError('Unknown class %s' % classname)
@@ -300,7 +312,7 @@ class VSDCLICommand(object):
 
             attribute = instance.get_attribute_infos(attribute_name)
             if attribute is None:
-                Printer.raiseError('Attribute %s could not be found in %s' % (attribute_name, name))
+                Printer.raiseError('Attribute %s could not be found in %s' % (attribute_name, instance.get_remote_name()))
 
             try:
                 value = attribute.attribute_type(attribute_value)
