@@ -18,8 +18,8 @@ class Printer(object):
             Args:
                 color: the color of the message
                 message: the message to print
-        """
 
+        """
         print(color + message + Style.RESET_ALL)
 
     @classmethod
@@ -28,6 +28,7 @@ class Printer(object):
 
             Args:
                 message: the message to print
+
         """
         raise Exception('\033[91m[Error] %s\033[0m' % message)
 
@@ -37,8 +38,8 @@ class Printer(object):
 
             Args:
                 message: the message to print
-        """
 
+        """
         cls.colorprint('[Success] %s' % message, Fore.GREEN)
 
     @classmethod
@@ -54,12 +55,15 @@ class Printer(object):
         else:
             cls.tabulate(data)
 
+    ### PRINTING METHODS
+
     @classmethod
     def json(cls, data):
         """ Print a json version of data
 
             Args:
                 data: something to display
+
         """
         if isinstance(data, str):
             print(data)
@@ -82,8 +86,8 @@ class Printer(object):
 
             Args:
                 data: something to disply
-        """
 
+        """
         if isinstance(data, str):
             print tabulate([[data]])
 
