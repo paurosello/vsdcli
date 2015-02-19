@@ -67,7 +67,7 @@ class VSDKUtils(object):
 
         for object_name in object_names:
             obj = getattr(vsdk, object_name)
-            VSDKUtils.OBJECTS_MAPPING[obj.get_remote_name()] = object_name
+            VSDKUtils.OBJECTS_MAPPING[obj.rest_name] = object_name
 
     @classmethod
     def get_vsdk_instance(cls, name):

@@ -38,14 +38,14 @@ class VSDCLICommand(object):
         try:
             fetcher = getattr(parent, instance.get_fetcher_name())
         except:
-            Printer.raise_error('%s failed fetching its %s' % (parent.get_remote_name(), instance.get_resource_name()))
+            Printer.raise_error('%s failed fetching its %s' % (parent.rest_name, instance.rest_resource_name))
 
-        (fetcher, parent, objects, connection) = fetcher.fetch_objects(filter=args.filter)
+        (fetcher, parent, objects, connection) = fetcher.fetch(filter=args.filter)
 
         if objects is None:
             Printer.raise_error('Could not retrieve. Activate verbose mode for more information')
 
-        Printer.success('%s %s have been retrieved' % (len(objects), instance.get_resource_name()))
+        Printer.success('%s %s have been retrieved' % (len(objects), instance.rest_resource_name))
         Printer.output(objects, args.json)
 
     @classmethod
@@ -257,7 +257,7 @@ class VSDCLICommand(object):
 
             attribute = instance.get_attribute_infos(attribute_name)
             if attribute is None:
-                Printer.raise_error('Attribute %s could not be found in %s' % (attribute_name, instance.get_remote_name()))
+                Printer.raise_error('Attribute %s could not be found in %s' % (attribute_name, instance.rest_name))
 
             try:
                 value = attribute.attribute_type(attribute_value)
@@ -267,4 +267,4 @@ class VSDCLICommand(object):
 
         # TODO-CS: Remove validation when we will have all attribute information from Swagger...
         # if not instance.validate():
-        #     Printer.raise_error('Cannot validate %s for creation due to following errors\n%s' % (instance.get_remote_name(), instance.errors))
+        #     Printer.raise_error('Cannot validate %s for creation due to following errors\n%s' % (instance.rest_name, instance.errors))
