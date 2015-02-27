@@ -57,10 +57,10 @@ Examples:
     (vsdcli-env) $ export VSDCLI_ENTERPRISE=csp
 
     (vsdcli-env) $ ./vsdcli list enterprises
-    (vsdcli-env) $ ./vsdcli list vports -in subnet a3db271b-b4ab-45a2-995e-971bf9e761bb
+    (vsdcli-env) $ ./vsdcli list vports --in subnet a3db271b-b4ab-45a2-995e-971bf9e761bb
     (vsdcli-env) $ ./vsdcli show domain --id 04850601-bebb-4b9b-acac-a31b455595a4
 
-    (vsdcli-env) $ ./vsdcli create zone -in domain 04850601-bebb-4b9b-acac-a31b455595a4 -p name='Test Zone' IPType=IPV4 numberOfHostsInSubnets=4 maintenanceMode=DISABLED
+    (vsdcli-env) $ ./vsdcli create zone --in domain dd960a1f-b555-4e6c-9bf5-f88832679b5e -p name='Test Zone' IPType=IPV4 numberOfHostsInSubnets=4 maintenanceMode=DISABLED
     (vsdcli-env) $ ./vsdcli create enterprise -p name='My Company.com'
 
     (vsdcli-env) $ ./vsdcli update enterprise -i 26f67b33-3601-4cdf-8ed0-fba7116d0200 -p name='Example'

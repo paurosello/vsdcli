@@ -1,5 +1,6 @@
 # -*- coding: utf-8 -*-
 
+import sys
 import json
 from colorama import init
 init()
@@ -30,7 +31,8 @@ class Printer(object):
                 message: the message to print
 
         """
-        raise Exception('\033[91m[Error] %s\033[0m' % message)
+        cls.colorprint('[Error] %s' % message, Fore.RED)
+        sys.exit(1)
 
     @classmethod
     def success(cls, message):

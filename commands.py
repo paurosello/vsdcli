@@ -36,7 +36,7 @@ class VSDCLICommand(object):
         parent = VSDKUtils.get_vsdk_parent(args.parent_infos, session.user)
 
         try:
-            fetcher = getattr(parent, instance.get_fetcher_name())
+            fetcher = getattr(parent, instance.rest_resource_name)
         except:
             Printer.raise_error('%s failed fetching its %s' % (parent.rest_name, instance.rest_resource_name))
 
@@ -82,7 +82,7 @@ class VSDCLICommand(object):
         cls._fill_instance_with_attributes(instance, attributes)
 
         try:
-            (instance, connection) = parent.add_child_object(instance)
+            (instance, connection) = parent.create_child(instance)
         except Exception, e:
             Printer.raise_error('Cannot create %s:\n%s' % (name, e))
 
@@ -191,8 +191,7 @@ class VSDCLICommand(object):
             Returns:
                 Returns an API Key if everything works fine
         """
-        api_url = '%s/nuage/api/v%s' % (args.api, args.api_version)
-        session = NUVSDSession(username=args.username, password=args.password, enterprise=args.enterprise, api_url=api_url)
+        session = NUVSDSession(username=args.username, password=args.password, enterprise=args.enterprise, api_url=args.api, version=args.api_version)
         session.start()
 
         user = session.user

@@ -22,7 +22,7 @@ if __name__ == '__main__':
     # List Command
     list_parser = subparsers.add_parser('list', parents=[default_parser], help="List all objects")
     list_parser.add_argument('list', help="name of the object to list")
-    list_parser.add_argument('-in', dest='parent_infos', nargs=2, help="Specify the parent name and its uuid")
+    list_parser.add_argument('--in', dest='parent_infos', nargs=2, help="Specify the parent name and its uuid")
     list_parser.add_argument('-f', '--filter', dest='filter', help="Specify a filter predicate")
 
     # Show Command
@@ -33,7 +33,7 @@ if __name__ == '__main__':
     # Create Command
     create_parser = subparsers.add_parser('create', parents=[default_parser], help="Create a new object")
     create_parser.add_argument('create', help='name of the object to create')
-    create_parser.add_argument('-in', dest='parent_infos', nargs=2, help="Specify the parent name and its uuid")
+    create_parser.add_argument('--in', dest='parent_infos', nargs=2, help="Specify the parent name and its uuid")
     create_parser.add_argument('-p', '--params', dest='params', nargs='*', help='List of Key=Value parameters', required=True)
 
     # Update Command
