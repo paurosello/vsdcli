@@ -72,7 +72,7 @@ Examples:
     (vsdcli-env) $ vsdcli objects                           # List all objects
     (vsdcli-env) $ vsdcli objects -f nsg                    # List all objects that contains word nsg
     (vsdcli-env) $ vsdcli objects -p enterprise             # List all objects that have an enterprise as parent
-    (vsdcli-env) $ vsdcli objects -c domain                 # List all objects that have an domain as child
+    (vsdcli-env) $ vsdcli objects -c domain                 # List all objects that have a domain as child
     (vsdcli-env) $ vsdcli objects -p enterprise -c domain   # List all objects that have an enterprise as parent and a domain as child
 
 

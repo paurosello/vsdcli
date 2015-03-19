@@ -56,8 +56,7 @@ if __name__ == '__main__':
     objects_parser.add_argument('-c', '--child', dest='child', help='Option to display children of a resource')
 
     args = parser.parse_args()
-
-    print args
+    # print args
 
     from commands import VSDCLICommand
     VSDCLICommand.execute(args)
