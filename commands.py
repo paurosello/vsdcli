@@ -46,7 +46,7 @@ class VSDCLICommand(object):
             Printer.raise_error('Could not retrieve. Activate verbose mode for more information')
 
         Printer.success('%s %s have been retrieved' % (len(objects), instance.rest_resource_name))
-        Printer.output(objects, args.json)
+        Printer.output(objects, fields=args.fields, json=args.json)
 
     @classmethod
     def show(cls, args):
@@ -66,7 +66,7 @@ class VSDCLICommand(object):
             Printer.raise_error('Could not find %s with id `%s`. Activate verbose mode for more information:\n%s' % (name, args.id, e))
 
         Printer.success('%s with id %s has been retrieved' % (name, args.id))
-        Printer.output(instance, args.json)
+        Printer.output(instance, fields=args.fields, json=args.json, headers={'Attribute', 'Value'})
 
     @classmethod
     def create(cls, args):
@@ -87,7 +87,7 @@ class VSDCLICommand(object):
             Printer.raise_error('Cannot create %s:\n%s' % (name, e))
 
         Printer.success('%s has been created with ID=%s' % (name, instance.id))
-        Printer.output(instance, args.json)
+        Printer.output(instance, json=args.json)
 
     @classmethod
     def update(cls, args):
@@ -115,7 +115,7 @@ class VSDCLICommand(object):
             Printer.raise_error('Cannot update %s:\n%s' % (name, e))
 
         Printer.success('%s with ID=%s has been updated' % (name, instance.id))
-        Printer.output(instance, args.json)
+        Printer.output(instance, json=args.json)
 
     @classmethod
     def delete(cls, args):
@@ -135,6 +135,38 @@ class VSDCLICommand(object):
             Printer.raise_error('Could not delete %s with id `%s`. Activate verbose mode for more information:\n%s' % (name, args.id, e))
 
         Printer.success('%s with ID=%s has been deleted' % (name, instance.id))
+
+    @classmethod
+    def objects(cls, args):
+        """ List all objects of the VSD
+
+        """
+        objects = []
+
+        if args.parent:
+            name = Utils.get_singular_name(args.parent)
+            instance = VSDKUtils.get_vsdk_instance(name)
+            objects = instance.children_rest_names
+        else:
+            objects = VSDKUtils.get_all_objects()
+
+        if args.child:
+            child = Utils.get_singular_name(args.child)
+            parents = []
+            for name in objects:
+                singular_name = Utils.get_singular_name(name)
+                instance = VSDKUtils.get_vsdk_instance(singular_name)
+
+                if child in instance.children_rest_names:
+                    parents.append(name)
+
+            objects = parents
+
+        if args.filter:
+            objects = [name for name in objects if args.filter in name]
+
+        Printer.success('%s objects found.' % len(objects))
+        Printer.output(objects, json=args.json, headers={'Name'})
 
     ### General methods
 
@@ -175,7 +207,7 @@ class VSDCLICommand(object):
         if args.enterprise is None:
             Printer.raise_error('Please provide an enterprise using option --enterprise or VSDCLI_ENTERPRISE environment variable')
 
-        setattr(args, "name", getattr(args, args.command))
+        setattr(args, "name", getattr(args, args.command, None))
         del(args.command)
 
     @classmethod

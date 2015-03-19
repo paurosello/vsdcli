@@ -8,6 +8,8 @@ from printer import Printer
 class Utils(object):
     """ Utils """
 
+    INVARIANT_RESOURCES = ['vrs']
+
     @classmethod
     def get_python_name(cls, name):
         """ Transform a given name to python name """
@@ -28,6 +30,9 @@ class Utils(object):
     def get_singular_name(cls, plural_name):
         """ Returns the singular name of the plural name """
 
+        if plural_name in Utils.INVARIANT_RESOURCES:
+            return plural_name
+
         if plural_name[-3:] == 'ies':
             return plural_name[:-3] + 'y'
 
@@ -39,6 +44,9 @@ class Utils(object):
     @classmethod
     def get_plural_name(cls, singular_name):
         """ Returns the plural name of the singular name """
+
+        if singular_name in Utils.INVARIANT_RESOURCES:
+            return singular_name
 
         vowels = ['a', 'e', 'i', 'o', 'u', 'y']
         if singular_name[-1:] == 'y' and singular_name[-2] not in vowels:
@@ -56,6 +64,21 @@ class VSDKUtils(object):
     """
     # TEMPORARY DATABASE
     OBJECTS_MAPPING = {}
+    IGNORED_RESOURCES = ['me']
+
+    @classmethod
+    def get_all_objects(cls):
+        """ Returns all objects from the VSD
+
+        """
+        if len(VSDKUtils.OBJECTS_MAPPING) == 0:
+            cls._load_vsdk_objects_mapping()
+
+        resources = VSDKUtils.OBJECTS_MAPPING.keys()
+        resources = [Utils.get_plural_name(name) for name in resources if name not in VSDKUtils.IGNORED_RESOURCES]
+        resources.sort()
+
+        return resources
 
     @classmethod
     def _load_vsdk_objects_mapping(cls):

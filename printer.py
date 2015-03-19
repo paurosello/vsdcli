@@ -6,12 +6,16 @@ from colorama import init
 init()
 from colorama import Fore, Style
 from tabulate import tabulate
+from bambou import NURESTObject
 
 
 class Printer(object):
     """ Print output for VSD-CLI
 
     """
+
+    TABULATE_FORMAT = "psql"
+
     @classmethod
     def colorprint(cls, message, color=''):
         """ Print a messsage in a specific color
@@ -65,7 +69,7 @@ class Printer(object):
         cls.colorprint('[INFO] %s' % message, Fore.CYAN)
 
     @classmethod
-    def output(cls, data, json=False):
+    def output(cls, data, fields=None, json=False, headers={}):
         """ Print either json or tabulate data
 
             Args:
@@ -73,14 +77,14 @@ class Printer(object):
 
         """
         if json:
-            cls.json(data)
+            cls.json(data, fields, headers)
         else:
-            cls.tabulate(data)
+            cls.tabulate(data, fields, headers)
 
     ### PRINTING METHODS
 
     @classmethod
-    def json(cls, data):
+    def json(cls, data, fields):
         """ Print a json version of data
 
             Args:
@@ -96,14 +100,14 @@ class Printer(object):
         elif isinstance(data, list):
             results = []
             for obj in data:
-                results.append(obj.to_dict())
+                results.append(cls._object_to_dict(obj, fields))
             print(json.dumps(results, indent=4))
 
         else:
-            print(json.dumps(data.to_dict(), indent=4))
+            print(json.dumps(cls._object_to_dict(data, fields), indent=4))
 
     @classmethod
-    def tabulate(cls, data):
+    def tabulate(cls, data, fields, headers={}):
         """ Prints a tabulate version of data
 
             Args:
@@ -111,18 +115,35 @@ class Printer(object):
 
         """
         if isinstance(data, str):
-            print tabulate([[data]])
+            print tabulate([[data]], tablefmt=Printer.TABULATE_FORMAT)
 
         elif isinstance(data, dict):
-            print tabulate([data], headers={})
+            print tabulate([data], headers=headers, tablefmt=Printer.TABULATE_FORMAT)
 
         elif isinstance(data, list):
             results = []
 
             for obj in data:
-                results.append(obj.to_dict())
+                if isinstance(obj, NURESTObject):
+                    results.append(cls._object_to_dict(obj, fields))
+                else:
+                    results.append([obj])
 
-            print tabulate(results, headers={})
+            print tabulate(results, headers=headers, tablefmt=Printer.TABULATE_FORMAT)
 
         else:
-            print tabulate([data.to_dict()], headers={})
+            dictionary = cls._object_to_dict(data, fields)
+            result = [(key, value) for key, value in dictionary.iteritems()]
+            print tabulate(result, headers=headers, tablefmt=Printer.TABULATE_FORMAT)
+
+    @classmethod
+    def _object_to_dict(cls, obj, fields=None):
+        """ Get object dictionnary with filtered fields
+
+        """
+        d = obj.to_dict()
+
+        if fields is None or 'ALL' in fields:
+            return d
+
+        return {key: d[key] for key in d.keys() if key in fields}

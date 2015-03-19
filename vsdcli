@@ -24,11 +24,13 @@ if __name__ == '__main__':
     list_parser.add_argument('list', help="name of the object to list")
     list_parser.add_argument('--in', dest='parent_infos', nargs=2, help="Specify the parent name and its uuid")
     list_parser.add_argument('-f', '--filter', dest='filter', help="Specify a filter predicate")
+    list_parser.add_argument('-x', '--fields', dest='fields', help="Specify output fields", nargs='+', type=str)
 
     # Show Command
     show_parser = subparsers.add_parser('show', parents=[default_parser], help="Show a specific object details")
     show_parser.add_argument('show', help="name of the object to show")
     show_parser.add_argument('-i', '--id', dest='id', help='Identifier of the object to show', required=True)
+    show_parser.add_argument('-x', '--fields', dest='fields', help="Specify output fields", nargs='+', type=str)
 
     # Create Command
     create_parser = subparsers.add_parser('create', parents=[default_parser], help="Create a new object")
@@ -46,6 +48,12 @@ if __name__ == '__main__':
     delete_parser = subparsers.add_parser('delete', parents=[default_parser], help="Delete an existing object")
     delete_parser.add_argument('delete', help='name of the object to update')
     delete_parser.add_argument('-i', '--id', dest='id', help='Identifier of the object to show', required=True)
+
+    # Resources Command
+    objects_parser = subparsers.add_parser('objects', parents=[default_parser], help="View all VSD objects")
+    objects_parser.add_argument('-f', '--filter', dest='filter', help='Specify a filter')
+    objects_parser.add_argument('-p', '--parent', dest='parent', help='Specify a parent resource')
+    objects_parser.add_argument('-c', '--child', dest='child', help='Option to display children of a resource')
 
     args = parser.parse_args()
 
