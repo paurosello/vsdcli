@@ -231,7 +231,7 @@ class VSDCLICommand(object):
             if error.response.status_code == 401:
                 Printer.raise_error('Could not log in to the VSD %s (API %s) with username=%s password=%s enterprise=%s' % (args.api, args.api_version, args.username, args.password, args.enterprise))
             else:
-                Printer.raise_error('Cannot access VSD %s (API %s) with current vsdk version: %s' % (args.api, args.api_version, VSDKUtils.get_installed_version()))
+                Printer.raise_error('Cannot access VSD %s. Current vsdk version (%s) tried to connect to the VSD API %s' % (args.api, VSDKUtils.get_installed_version()), args.api_version)
 
         user = session.user
 
