@@ -2,6 +2,8 @@
 
 import importlib
 import re
+import pkg_resources
+
 from printer import Printer
 
 
@@ -161,3 +163,10 @@ class VSDKUtils(object):
             return parent
 
         return user
+
+    @classmethod
+    def get_installed_version(cls):
+        """ Get VSDK version
+
+        """
+        return pkg_resources.get_distribution("vsdk").version

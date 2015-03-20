@@ -4,6 +4,7 @@ import os
 import pkg_resources
 import logging
 
+from bambou.exceptions import BambouHTTPError
 from vsdk import NUVSDSession
 from vsdk.utils import set_log_level
 from printer import Printer
@@ -224,7 +225,13 @@ class VSDCLICommand(object):
                 Returns an API Key if everything works fine
         """
         session = NUVSDSession(username=args.username, password=args.password, enterprise=args.enterprise, api_url=args.api, version=args.api_version)
-        session.start()
+        try:
+            session.start()
+        except BambouHTTPError as error:
+            if error.response.status_code == 401:
+                Printer.raise_error('Could not log in to the VSD %s (API %s) with username=%s password=%s enterprise=%s' % (args.api, args.api_version, args.username, args.password, args.enterprise))
+            else:
+                Printer.raise_error('Cannot access VSD %s (API %s) with current vsdk version: %s' % (args.api, args.api_version, VSDKUtils.get_installed_version()))
 
         user = session.user
 
