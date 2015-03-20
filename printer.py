@@ -2,6 +2,7 @@
 
 import sys
 import json
+from collections import OrderedDict
 from colorama import init
 init()
 from colorama import Fore, Style
@@ -141,9 +142,16 @@ class Printer(object):
         """ Get object dictionnary with filtered fields
 
         """
-        d = obj.to_dict()
+        default_dict = obj.to_dict()
 
         if fields is None or 'ALL' in fields:
-            return d
+            return default_dict
 
-        return {key: d[key] for key in d.keys() if key in fields}
+        known_fields = default_dict.keys()
+        ordered_dict = OrderedDict()
+
+        for field in fields:
+            if field in known_fields:
+                ordered_dict[field] = default_dict[field]
+
+        return ordered_dict
