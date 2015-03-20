@@ -183,12 +183,12 @@ class VSDCLICommand(object):
 
         """
 
-        # TODO-CS: Remove. For Development purpose only
-        os.environ["VSDCLI_USERNAME"] = u"csproot"
-        os.environ["VSDCLI_PASSWORD"] = u"csproot"
-        os.environ["VSDCLI_API_URL"] = u"https://135.227.220.152:8443"
-        os.environ["VSDCLI_ENTERPRISE"] = u"csp"
-        # End
+        # # TODO-CS: Remove. For Development purpose only
+        # os.environ["VSDCLI_USERNAME"] = u"csproot"
+        # os.environ["VSDCLI_PASSWORD"] = u"csproot"
+        # os.environ["VSDCLI_API_URL"] = u"https://135.227.220.152:8443"
+        # os.environ["VSDCLI_ENTERPRISE"] = u"csp"
+        # # End
 
         try:
             vsdk_version = pkg_resources.get_distribution('vsdk').version

@@ -49,7 +49,7 @@ You can define following environments variables:
 
 Examples:
 
-    (vsdcli-env) $ vsdcli list enterprises --api https://135.227.220.152:8443 -username csproot --password csproot --enterprise csp
+    (vsdcli-env) $ vsdcli list enterprises --api https://135.227.220.152:8443 --username csproot --password csproot --enterprise csp
 
     (vsdcli-env) $ export VSDCLI_PASSWORD=csproot
     (vsdcli-env) $ export VSDCLI_USERNAME=csproot
