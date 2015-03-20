@@ -146,7 +146,8 @@ class VSDCLICommand(object):
         if args.parent:
             name = Utils.get_singular_name(args.parent)
             instance = VSDKUtils.get_vsdk_instance(name)
-            objects = instance.children_rest_names
+
+            objects = [Utils.get_plural_name(name) for name in instance.children_rest_names]
         else:
             objects = VSDKUtils.get_all_objects()
 
@@ -164,6 +165,8 @@ class VSDCLICommand(object):
 
         if args.filter:
             objects = [name for name in objects if args.filter in name]
+
+        objects.sort()
 
         Printer.success('%s objects found.' % len(objects))
         Printer.output(objects, json=args.json, headers={'Name'})

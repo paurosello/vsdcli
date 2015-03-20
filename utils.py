@@ -76,7 +76,6 @@ class VSDKUtils(object):
 
         resources = VSDKUtils.OBJECTS_MAPPING.keys()
         resources = [Utils.get_plural_name(name) for name in resources if name not in VSDKUtils.IGNORED_RESOURCES]
-        resources.sort()
 
         return resources
 
