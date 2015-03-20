@@ -35,10 +35,14 @@ class VSDCLICommand(object):
         session = cls._get_user_session(args)
         parent = VSDKUtils.get_vsdk_parent(args.parent_infos, session.user)
 
+        classname = instance.__class__.__name__[2:]
+        plural_classname = Utils.get_plural_name(classname)
+        fetcher_name = Utils.get_python_name(plural_classname)
+
         try:
-            fetcher = getattr(parent, instance.rest_resource_name)
+            fetcher = getattr(parent, fetcher_name)
         except:
-            Printer.raise_error('%s failed fetching its %s' % (parent.rest_name, instance.rest_resource_name))
+            Printer.raise_error('%s failed to found fetcher %s' % (parent.rest_name, instance.fetcher_name))
 
         (fetcher, parent, objects, connection) = fetcher.fetch(filter=args.filter)
 

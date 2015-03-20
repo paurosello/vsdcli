@@ -11,19 +11,34 @@ class Utils(object):
     INVARIANT_RESOURCES = ['vrs']
 
     @classmethod
+    def _clean_name(cls, string):
+        """ String cleaning for specific cases
+
+            This is very specific and is used to force
+            some underscore while using get_python_name.
+
+            Args:
+                string: the string to clean
+
+            Returns:
+                Returns a clean string
+        """
+        rep = {
+            "VPort": "Vport",
+            "IPID": "IpID"
+        }
+
+        rep = dict((re.escape(k), v) for k, v in rep.iteritems())
+        pattern = re.compile("|".join(rep.keys()))
+        return pattern.sub(lambda m: rep[re.escape(m.group(0))], string)
+
+    @classmethod
     def get_python_name(cls, name):
         """ Transform a given name to python name """
-        first_cap_re = re.compile('(.)([A-Z](?!s[A-Z])[a-z]+)')
+        first_cap_re = re.compile('(.)([A-Z](?!s([A-Z])*)[a-z]+)')
         all_cap_re = re.compile('([a-z0-9])([A-Z])')
 
-        def repl(matchobj):
-            """ Replacement method """
-            if matchobj.start() == 0:
-                return matchobj.expand(r"\1\2")
-            else:
-                return matchobj.expand(r"\1_\2")
-
-        s1 = first_cap_re.sub(repl, name)
+        s1 = first_cap_re.sub(r'\1_\2', Utils._clean_name(name))
         return all_cap_re.sub(r'\1_\2', s1).lower()
 
     @classmethod
