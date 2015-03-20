@@ -195,16 +195,16 @@ class VSDCLICommand(object):
         args.enterprise = args.enterprise if args.enterprise else os.environ.get('VSDCLI_ENTERPRISE', None)
         args.json = True if os.environ.get('VSDCLI_JSON_OUTPUT') == 'True' else args.json
 
-        if args.username is None:
+        if args.username is None or len(args.username) == 0 :
             Printer.raise_error('Please provide a username using option --username or VSDCLI_USERNAME environment variable')
 
-        if args.password is None:
+        if args.password is None or len(args.password) == 0:
             Printer.raise_error('Please provide a password using option --password or VSDCLI_PASSWORD environment variable')
 
-        if args.api is None:
+        if args.api is None or len(args.api) == 0:
             Printer.raise_error('Please provide an API URL using option --api or VSDCLI_API_URL environment variable')
 
-        if args.enterprise is None:
+        if args.enterprise is None or len(args.enterprise) == 0:
             Printer.raise_error('Please provide an enterprise using option --enterprise or VSDCLI_ENTERPRISE environment variable')
 
         setattr(args, "name", getattr(args, args.command, None))
