@@ -84,6 +84,13 @@ class VSDKUtils(object):
     IGNORED_RESOURCES = ['me']
 
     @classmethod
+    def _get_vsdk_package(cls):
+        """ Returns vsdk package
+
+        """
+        return importlib.import_module('vsdk')
+
+    @classmethod
     def get_all_objects(cls):
         """ Returns all objects from the VSD
 
@@ -101,7 +108,7 @@ class VSDKUtils(object):
         """ Load vsdk objects mapping
 
         """
-        vsdk = importlib.import_module('vsdk')
+        vsdk = cls._get_vsdk_package()
         object_names = [name for name in dir(vsdk) if name != 'NUVSDSession' and name.startswith('NU') and not name.endswith('Fetcher')]
 
         for object_name in object_names:
@@ -124,10 +131,9 @@ class VSDKUtils(object):
         if name in VSDKUtils.OBJECTS_MAPPING:
             classname = VSDKUtils.OBJECTS_MAPPING[name]
 
-            vsdk = importlib.import_module('vsdk')
             klass = None
             try:
-                vsdk = importlib.import_module('vsdk')
+                vsdk = cls._get_vsdk_package()
                 klass = getattr(vsdk, classname)
             except:
                 Printer.raise_error('Unknown class %s' % classname)
