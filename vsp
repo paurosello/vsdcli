@@ -12,6 +12,7 @@ if __name__ == '__main__':
     default_parser.add_argument('--username', help='username to get an api key or set `VSDCLI_USERNAME` in your variable environment')
     default_parser.add_argument('--password', help='password to get an api key or set `VSDCLI_PASSWORD` in your variable environment')
     default_parser.add_argument('--api', help='URL of the API endpoint or set `VSDCLI_API_URL` in your variable environment')
+    default_parser.add_argument('--version', help='Version of the API or set `VSDCLI_API_VERSION` in your variable environment')
     default_parser.add_argument('--enterprise', help='Name of the enterprise to connect or set `VSDCLI_ENTERPRISE` in your variable environment')
     default_parser.add_argument('--json', help='Add this option get a JSON output or set VSDCLI_JSON_OUTPUT="True"', action='store_true')
 
@@ -56,7 +57,6 @@ if __name__ == '__main__':
     objects_parser.add_argument('-c', '--child', dest='child', help='Option to display children of a resource')
 
     args = parser.parse_args()
-    # print args
 
-    from commands import VSDCLICommand
-    VSDCLICommand.execute(args)
+    from commands import VSPCommand
+    VSPCommand.execute(args)

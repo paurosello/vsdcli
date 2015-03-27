@@ -1,17 +1,16 @@
 # -*- coding: utf-8 -*-
 
 import os
-import pkg_resources
 import logging
 
 from bambou.exceptions import BambouHTTPError
 from vsdk import NUVSDSession
 from vsdk.utils import set_log_level
 from printer import Printer
-from utils import Utils, VSDKUtils
+from utils import Utils, VSDKInspector
 
 
-class VSDCLICommand(object):
+class VSPCommand(object):
     """ VSD CLI commands
 
     """
@@ -31,10 +30,11 @@ class VSDCLICommand(object):
         """ List all objects
 
         """
+        inspector = VSDKInspector(args.version)
         name = Utils.get_singular_name(args.name)
-        instance = VSDKUtils.get_vsdk_instance(name)
+        instance = inspector.get_vsdk_instance(name)
         session = cls._get_user_session(args)
-        parent = VSDKUtils.get_vsdk_parent(args.parent_infos, session.user)
+        parent = inspector.get_vsdk_parent(args.parent_infos, session.user)
 
         classname = instance.__class__.__name__[2:]
         plural_classname = Utils.get_plural_name(classname)
@@ -60,8 +60,9 @@ class VSDCLICommand(object):
             Args:
                 uuid: Identifier of the object to show
         """
+        inspector = VSDKInspector(args.version)
         name = Utils.get_singular_name(args.name)
-        instance = VSDKUtils.get_vsdk_instance(name)
+        instance = inspector.get_vsdk_instance(name)
         instance.id = args.id
         cls._get_user_session(args)
 
@@ -78,10 +79,11 @@ class VSDCLICommand(object):
         """ Create an object
 
         """
+        inspector = VSDKInspector(args.version)
         name = Utils.get_singular_name(args.name)
-        instance = VSDKUtils.get_vsdk_instance(name)
+        instance = inspector.get_vsdk_instance(name)
         session = cls._get_user_session(args)
-        parent = VSDKUtils.get_vsdk_parent(args.parent_infos, session.user)
+        parent = inspector.get_vsdk_parent(args.parent_infos, session.user)
         attributes = cls._get_attributes(args.params)
 
         cls._fill_instance_with_attributes(instance, attributes)
@@ -100,8 +102,9 @@ class VSDCLICommand(object):
 
 
         """
+        inspector = VSDKInspector(args.version)
         name = Utils.get_singular_name(args.name)
-        instance = VSDKUtils.get_vsdk_instance(name)
+        instance = inspector.get_vsdk_instance(name)
         instance.id = args.id
         attributes = cls._get_attributes(args.params)
 
@@ -128,8 +131,9 @@ class VSDCLICommand(object):
 
 
         """
+        inspector = VSDKInspector(args.version)
         name = Utils.get_singular_name(args.name)
-        instance = VSDKUtils.get_vsdk_instance(name)
+        instance = inspector.get_vsdk_instance(name)
         instance.id = args.id
 
         cls._get_user_session(args)
@@ -146,22 +150,23 @@ class VSDCLICommand(object):
         """ List all objects of the VSD
 
         """
+        inspector = VSDKInspector(args.version)
         objects = []
 
         if args.parent:
             name = Utils.get_singular_name(args.parent)
-            instance = VSDKUtils.get_vsdk_instance(name)
+            instance = inspector.get_vsdk_instance(name)
 
             objects = [Utils.get_plural_name(name) for name in instance.children_rest_names]
         else:
-            objects = VSDKUtils.get_all_objects()
+            objects = inspector.get_all_objects()
 
         if args.child:
             child = Utils.get_singular_name(args.child)
             parents = []
             for name in objects:
                 singular_name = Utils.get_singular_name(name)
-                instance = VSDKUtils.get_vsdk_instance(singular_name)
+                instance = inspector.get_vsdk_instance(singular_name)
 
                 if child in instance.children_rest_names:
                     parents.append(name)
@@ -184,19 +189,14 @@ class VSDCLICommand(object):
 
         """
 
-        try:
-            vsdk_version = pkg_resources.get_distribution('vsdk').version
-            args.api_version = vsdk_version.split('-', 1)[0]
-        except:
-            Printer.raise_error('Please install requirements using command line `pip install -r requirements.txt`.')
-
         args.username = args.username if args.username else os.environ.get('VSDCLI_USERNAME', None)
         args.password = args.password if args.password else os.environ.get('VSDCLI_PASSWORD', None)
         args.api = args.api if args.api else os.environ.get('VSDCLI_API_URL', None)
+        args.version = args.version if args.version else os.environ.get('VSDCLI_API_VERSION', None)
         args.enterprise = args.enterprise if args.enterprise else os.environ.get('VSDCLI_ENTERPRISE', None)
         args.json = True if os.environ.get('VSDCLI_JSON_OUTPUT') == 'True' else args.json
 
-        if args.username is None or len(args.username) == 0 :
+        if args.username is None or len(args.username) == 0:
             Printer.raise_error('Please provide a username using option --username or VSDCLI_USERNAME environment variable')
 
         if args.password is None or len(args.password) == 0:
@@ -224,14 +224,14 @@ class VSDCLICommand(object):
             Returns:
                 Returns an API Key if everything works fine
         """
-        session = NUVSDSession(username=args.username, password=args.password, enterprise=args.enterprise, api_url=args.api, version=args.api_version)
+        session = NUVSDSession(username=args.username, password=args.password, enterprise=args.enterprise, api_url=args.api, version=args.version)
         try:
             session.start()
         except BambouHTTPError as error:
             if error.response.status_code == 401:
-                Printer.raise_error('Could not log in to the VSD %s (API %s) with username=%s password=%s enterprise=%s' % (args.api, args.api_version, args.username, args.password, args.enterprise))
+                Printer.raise_error('Could not log in to the VSD %s (API %s) with username=%s password=%s enterprise=%s' % (args.api, args.version, args.username, args.password, args.enterprise))
             else:
-                Printer.raise_error('Cannot access VSD %s. Current vsdk version (%s) tried to connect to the VSD API %s' % (args.api, VSDKUtils.get_installed_version()), args.api_version)
+                Printer.raise_error('Cannot access VSD %s. Current vsdk version (%s) tried to connect to the VSD API %s' % (args.api, VSDKInspector.get_installed_version(), args.version))
 
         user = session.user
 

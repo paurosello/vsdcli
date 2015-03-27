@@ -74,49 +74,80 @@ class Utils(object):
 
         return singular_name + 's'
 
+    @classmethod
+    def get_vspk_version(cls, version):
+        """ Get the vspk version according to the given version
 
-class VSDKUtils(object):
+            Args:
+                version (int): the version
+
+            Returns:
+                version as string
+
+            Example:
+                get_vspk_version(3.1)
+                >>> v3_1
+
+        """
+        return ('v%s' % version).replace('.', '_')
+
+
+class VSDKInspector(object):
     """ Utils to access VSDK objects
 
     """
-    # TEMPORARY DATABASE
-    OBJECTS_MAPPING = {}
-    IGNORED_RESOURCES = ['me']
 
-    @classmethod
-    def _get_vsdk_package(cls):
+    def __init__(self, version=None):
+        """ Initializes
+
+        """
+        if version:
+            self._version = Utils.get_vspk_version(version)
+
+        self._objects_mapping = {}
+        self._ignored_resources = ['me']
+        self._vsdk = None
+
+        self._load_objects()
+
+    def _load_objects(self):
+        """ Load objects in a temporary database
+
+        """
+        self._get_vsdk_package()
+
+        object_names = [name for name in dir(self._vsdk) if name != 'NUVSDSession' and name.startswith('NU') and not name.endswith('Fetcher')]
+
+        for object_name in object_names:
+            obj = getattr(self._vsdk, object_name)
+            self._objects_mapping[obj.rest_name] = object_name
+
+    def _get_vsdk_package(self):
         """ Returns vsdk package
 
         """
-        return importlib.import_module('vsdk')
+        if self._vsdk is None:
+            try:
+                self._vsdk = importlib.import_module('vspk.vsdk.%s' % self._version)
+                # Printer.info('Imported vsdk.%s from VSPK.' % self._version)
+            except ImportError:
+                self._vsdk = importlib.import_module('vsdk')
+                # Printer.info('Imported vsdk %s.' % VSDKInspector.get_installed_version())
+            except:
+                Printer.raise_error('Please install requirements using command line `pip install -r requirements.txt`.\n%s' % error)
 
-    @classmethod
-    def get_all_objects(cls):
+        return self._vsdk
+
+    def get_all_objects(self):
         """ Returns all objects from the VSD
 
         """
-        if len(VSDKUtils.OBJECTS_MAPPING) == 0:
-            cls._load_vsdk_objects_mapping()
-
-        resources = VSDKUtils.OBJECTS_MAPPING.keys()
-        resources = [Utils.get_plural_name(name) for name in resources if name not in VSDKUtils.IGNORED_RESOURCES]
+        resources = self._objects_mapping.keys()
+        resources = [Utils.get_plural_name(name) for name in resources if name not in self._ignored_resources]
 
         return resources
 
-    @classmethod
-    def _load_vsdk_objects_mapping(cls):
-        """ Load vsdk objects mapping
-
-        """
-        vsdk = cls._get_vsdk_package()
-        object_names = [name for name in dir(vsdk) if name != 'NUVSDSession' and name.startswith('NU') and not name.endswith('Fetcher')]
-
-        for object_name in object_names:
-            obj = getattr(vsdk, object_name)
-            VSDKUtils.OBJECTS_MAPPING[obj.rest_name] = object_name
-
-    @classmethod
-    def get_vsdk_instance(cls, name):
+    def get_vsdk_instance(self, name):
         """ Get VSDK object instance according to a given name
 
             Args:
@@ -125,16 +156,12 @@ class VSDKUtils(object):
             Returns:
                 A VSDK object or raise an exception
         """
-        if len(VSDKUtils.OBJECTS_MAPPING) == 0:
-            cls._load_vsdk_objects_mapping()
-
-        if name in VSDKUtils.OBJECTS_MAPPING:
-            classname = VSDKUtils.OBJECTS_MAPPING[name]
+        if name in self._objects_mapping:
+            classname = self._objects_mapping[name]
 
             klass = None
             try:
-                vsdk = cls._get_vsdk_package()
-                klass = getattr(vsdk, classname)
+                klass = getattr(self._vsdk, classname)
             except:
                 Printer.raise_error('Unknown class %s' % classname)
 
@@ -142,8 +169,7 @@ class VSDKUtils(object):
 
         Printer.raise_error('Unknown object named %s' % name)
 
-    @classmethod
-    def get_vsdk_parent(cls, parent_infos, user):
+    def get_vsdk_parent(self, parent_infos, user):
         """ Get VSDK parent object if possible
             Otherwise it will take the user
 
@@ -158,7 +184,7 @@ class VSDKUtils(object):
             name = parent_infos[0]
             uuid = parent_infos[1]
 
-            parent = VSDKUtils.get_vsdk_instance(name)
+            parent = self.get_vsdk_instance(name)
             parent.id = uuid
 
             try:
@@ -171,7 +197,7 @@ class VSDKUtils(object):
         return user
 
     @classmethod
-    def get_installed_version(cls):
+    def get_installed_version(self):
         """ Get VSDK version
 
         """

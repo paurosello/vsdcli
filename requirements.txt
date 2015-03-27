@@ -1,4 +1,4 @@
 colorama
 tabulate
-git+http://github.mv.usa.alcatel.com/chserafi/bambou.git
-git+http://github.mv.usa.alcatel.com/chserafi/vsdk.git@3.1
+bambou
+vspk
