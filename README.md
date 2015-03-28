@@ -51,11 +51,11 @@ Examples:
 
     (vsp-env) $ vsp list enterprises --api https://vsd:8443 --username csproot --password csproot --enterprise csp --version 3.2
 
-    (vsp-env) $ export vsp_PASSWORD=csproot
-    (vsp-env) $ export vsp_USERNAME=csproot
-    (vsp-env) $ export vsp_API_URL=https://vsd:8443
-    (vsp-env) $ export vsp_ENTERPRISE=csp
-    (vsp-env) $ export vsp_API_VERSION=3.2
+    (vsp-env) $ export VSPCLI_PASSWORD=csproot
+    (vsp-env) $ export VSPCLI_USERNAME=csproot
+    (vsp-env) $ export VSPCLI_API_URL=https://vsd:8443
+    (vsp-env) $ export VSPCLI_ENTERPRISE=csp
+    (vsp-env) $ export VSPCLI_API_VERSION=3.2
 
     (vsp-env) $ vsp list enterprises
     (vsp-env) $ vsp list enterprises -f "name == 'My Company'"
