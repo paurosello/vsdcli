@@ -202,3 +202,35 @@ class VSDKInspector(object):
 
         """
         return pkg_resources.get_distribution("vsdk").version
+
+    def get_user_session(self, args):
+        """ Get api key
+
+            Args:
+                username: username to get an api key
+                password: password to get an api key
+                api: URL of the API endpoint
+                enterprise: Name of the enterprise to connect
+
+            Returns:
+                Returns an API Key if everything works fine
+        """
+        session = self._vsdk.NUVSDSession(username=args.username, password=args.password, enterprise=args.enterprise, api_url=args.api, version=args.version)
+        try:
+            session.start()
+        except BambouHTTPError as error:
+            if error.response.status_code == 401:
+                Printer.raise_error('Could not log in to the VSD %s (API %s) with username=%s password=%s enterprise=%s' % (args.api, args.version, args.username, args.password, args.enterprise))
+            else:
+                Printer.raise_error('Cannot access VSD %s. Current vsdk version (%s) tried to connect to the VSD API %s' % (args.api, VSDKInspector.get_installed_version(), args.version))
+
+        user = session.user
+
+        if user.api_key is None:
+            Printer.raise_error('Could not get a valid API key. Activate verbose mode for more information')
+
+        return session
+
+    def set_log_level(self, level):
+
+        self._vsdk.utils.set_log_level(level)

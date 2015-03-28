@@ -1,11 +1,8 @@
 # -*- coding: utf-8 -*-
 
 import os
-import logging
+# import logging
 
-from bambou.exceptions import BambouHTTPError
-from vsdk import NUVSDSession
-from vsdk.utils import set_log_level
 from printer import Printer
 from utils import Utils, VSDKInspector
 
@@ -20,7 +17,7 @@ class VSPCommand(object):
 
         func = getattr(cls, args.command)
         cls._check_arguments(args)
-        cls._define_verbosity(args.verbose)
+        # cls._define_verbosity(args.verbose)
         func(args)
 
     ### Commands
@@ -33,7 +30,7 @@ class VSPCommand(object):
         inspector = VSDKInspector(args.version)
         name = Utils.get_singular_name(args.name)
         instance = inspector.get_vsdk_instance(name)
-        session = cls._get_user_session(args)
+        session = inspector.get_user_session(args)
         parent = inspector.get_vsdk_parent(args.parent_infos, session.user)
 
         classname = instance.__class__.__name__[2:]
@@ -64,7 +61,7 @@ class VSPCommand(object):
         name = Utils.get_singular_name(args.name)
         instance = inspector.get_vsdk_instance(name)
         instance.id = args.id
-        cls._get_user_session(args)
+        inspector.get_user_session(args)
 
         try:
             (instance, connection) = instance.fetch()
@@ -82,7 +79,7 @@ class VSPCommand(object):
         inspector = VSDKInspector(args.version)
         name = Utils.get_singular_name(args.name)
         instance = inspector.get_vsdk_instance(name)
-        session = cls._get_user_session(args)
+        session = inspector.get_user_session(args)
         parent = inspector.get_vsdk_parent(args.parent_infos, session.user)
         attributes = cls._get_attributes(args.params)
 
@@ -108,7 +105,7 @@ class VSPCommand(object):
         instance.id = args.id
         attributes = cls._get_attributes(args.params)
 
-        cls._get_user_session(args)
+        inspector.get_user_session(args)
 
         try:
             (instance, connection) = instance.fetch()
@@ -136,7 +133,7 @@ class VSPCommand(object):
         instance = inspector.get_vsdk_instance(name)
         instance.id = args.id
 
-        cls._get_user_session(args)
+        inspector.get_user_session(args)
 
         try:
             (instance, connection) = instance.delete()
@@ -211,48 +208,21 @@ class VSPCommand(object):
         setattr(args, "name", getattr(args, args.command, None))
         del(args.command)
 
-    @classmethod
-    def _get_user_session(cls, args):
-        """ Get api key
 
-            Args:
-                username: username to get an api key
-                password: password to get an api key
-                api: URL of the API endpoint
-                enterprise: Name of the enterprise to connect
 
-            Returns:
-                Returns an API Key if everything works fine
-        """
-        session = NUVSDSession(username=args.username, password=args.password, enterprise=args.enterprise, api_url=args.api, version=args.version)
-        try:
-            session.start()
-        except BambouHTTPError as error:
-            if error.response.status_code == 401:
-                Printer.raise_error('Could not log in to the VSD %s (API %s) with username=%s password=%s enterprise=%s' % (args.api, args.version, args.username, args.password, args.enterprise))
-            else:
-                Printer.raise_error('Cannot access VSD %s. Current vsdk version (%s) tried to connect to the VSD API %s' % (args.api, VSDKInspector.get_installed_version(), args.version))
-
-        user = session.user
-
-        if user.api_key is None:
-            Printer.raise_error('Could not get a valid API key. Activate verbose mode for more information')
-
-        return session
-
-    @classmethod
-    def _define_verbosity(cls, verbose):
-        """ Defines verbosity
-
-            Args:
-                verbose: Boolean to activate or deactivate DEBUG mode
-
-        """
-        if verbose:
-            Printer.info('Verbose mode is now activated.')
-            set_log_level(logging.DEBUG)
-        else:
-            set_log_level(logging.ERROR)
+    # @classmethod
+    # def _define_verbosity(cls, verbose):
+    #     """ Defines verbosity
+    #
+    #         Args:
+    #             verbose: Boolean to activate or deactivate DEBUG mode
+    #
+    #     """
+    #     if verbose:
+    #         Printer.info('Verbose mode is now activated.')
+    #         set_log_level(logging.DEBUG)
+    #     else:
+    #         set_log_level(logging.ERROR)
 
     @classmethod
     def _get_attributes(cls, params):
