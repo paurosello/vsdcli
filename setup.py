@@ -1,7 +1,7 @@
 from setuptools  import setup
 
 setup(
-    name='vsd',
+    name='vsdcli',
     version='0.0.1',
     author='Christophe Serafin',
     author_email='christophe.serafin@nuagenetworks.net',
@@ -16,5 +16,9 @@ setup(
         "License :: Other/Proprietary License",
         "Environment :: Console",
         "Intended Audience :: Developers"
-    ]
+    ],
+    entry_points={
+        'console_scripts': [
+            'vsd = vsdgenerators.apidocgenerator:main']
+    },
 )

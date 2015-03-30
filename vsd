@@ -5,7 +5,8 @@ import sys
 
 sys.path.append("../")
 
-if __name__ == '__main__':
+
+def main(argv=sys.argv):
 
     default_parser = argparse.ArgumentParser(description="CLI for VSD Software Development Kit", add_help=False)
     default_parser.add_argument('-v', '--verbose', help='Activate verbose mode', action='store_true')
@@ -60,3 +61,7 @@ if __name__ == '__main__':
 
     from commands import VSDCommand
     VSDCommand.execute(args)
+
+
+if __name__ == '__main__':
+    sys.exit(main(sys.argv))
