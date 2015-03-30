@@ -53,9 +53,9 @@ Examples:
 
     (vsd-env) $ export VSD_PASSWORD=csproot
     (vsd-env) $ export VSD_USERNAME=csproot
-    (vsd-env) $ export VSD_API_URL=https://vsd:8443
     (vsd-env) $ export VSD_ENTERPRISE=csp
     (vsd-env) $ export VSD_API_VERSION=3.2
+    (vsd-env) $ export VSD_API_URL=https://vsd:8443
 
     (vsd-env) $ vsd list enterprises
     (vsd-env) $ vsd list enterprises -f "name == 'My Company'"
