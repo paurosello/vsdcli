@@ -1,5 +1,6 @@
 # -*- coding: utf-8 -*-
 
+import logging
 import importlib
 import re
 import pkg_resources
@@ -133,7 +134,7 @@ class VSDKInspector(object):
             except ImportError:
                 self._vsdk = importlib.import_module('vsdk')
                 # Printer.info('Imported vsdk %s.' % VSDKInspector.get_installed_version())
-            except:
+            except ImportError as error:
                 Printer.raise_error('Please install requirements using command line `pip install -r requirements.txt`.\n%s' % error)
 
         return self._vsdk
@@ -215,6 +216,7 @@ class VSDKInspector(object):
             Returns:
                 Returns an API Key if everything works fine
         """
+        self._set_verbose_mode(args.verbose)
         session = self._vsdk.NUVSDSession(username=args.username, password=args.password, enterprise=args.enterprise, api_url=args.api, version=args.version)
         try:
             session.start()
@@ -231,6 +233,16 @@ class VSDKInspector(object):
 
         return session
 
-    def set_log_level(self, level):
+    def _set_verbose_mode(self, verbose):
+        """ Defines verbosity
 
-        self._vsdk.utils.set_log_level(level)
+            Args:
+                verbose: Boolean to activate or deactivate DEBUG mode
+
+        """
+        print self._vsdk
+        if verbose:
+            Printer.info('Verbose mode is now activated.')
+            self._vsdk.set_log_level(logging.DEBUG)
+        else:
+            self._vsdk.set_log_level(logging.ERROR)

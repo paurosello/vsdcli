@@ -1,7 +1,6 @@
 # -*- coding: utf-8 -*-
 
 import os
-# import logging
 
 from printer import Printer
 from utils import Utils, VSDKInspector
@@ -17,7 +16,6 @@ class VSDCommand(object):
 
         func = getattr(cls, args.command)
         cls._check_arguments(args)
-        # cls._define_verbosity(args.verbose)
         func(args)
 
     ### Commands
@@ -207,22 +205,6 @@ class VSDCommand(object):
 
         setattr(args, "name", getattr(args, args.command, None))
         del(args.command)
-
-
-
-    # @classmethod
-    # def _define_verbosity(cls, verbose):
-    #     """ Defines verbosity
-    #
-    #         Args:
-    #             verbose: Boolean to activate or deactivate DEBUG mode
-    #
-    #     """
-    #     if verbose:
-    #         Printer.info('Verbose mode is now activated.')
-    #         set_log_level(logging.DEBUG)
-    #     else:
-    #         set_log_level(logging.ERROR)
 
     @classmethod
     def _get_attributes(cls, params):
