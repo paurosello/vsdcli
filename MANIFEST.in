@@ -1,4 +1,2 @@
 include *.txt
 include *.md
-include *.py
-include vsd
