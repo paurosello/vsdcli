@@ -4,7 +4,7 @@ setup(
     name='vsdcli',
     version='0.0.1',
     author='Christophe Serafin',
-    packages=['lib'],
+    packages=['vsdcli'],
     author_email='christophe.serafin@nuagenetworks.net',
     description='VSD Command Line Interface',
     long_description=open('README.md').read(),
@@ -20,6 +20,6 @@ setup(
     ],
     entry_points={
         'console_scripts': [
-            'vsd = lib.vsd:main']
+            'vsd = vsdcli.vsd:main']
     },
 )
