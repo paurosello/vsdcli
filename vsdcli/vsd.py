@@ -28,7 +28,7 @@ class _HelpAction(argparse._HelpAction):
 def main(argv=sys.argv):
 
     parser = argparse.ArgumentParser(description="CLI for VSD Software Development Kit", add_help=False)
-    parser.add_argument('--verbose', help='Activate verbose mode', action='store_true')
+    parser.add_argument('-v', '--verbose', help='Activate verbose mode', action='store_true')
     parser.add_argument('--username', help='username to get an api key or set `VSD_USERNAME` in your variable environment')
     parser.add_argument('--password', help='password to get an api key or set `VSD_PASSWORD` in your variable environment')
     parser.add_argument('--api', help='URL of the API endpoint or set `VSD_API_URL` in your variable environment')
