@@ -78,7 +78,7 @@ class Printer(object):
 
         """
         if json:
-            cls.json(data, fields, headers)
+            cls.json(data, fields)
         else:
             cls.tabulate(data, fields, headers)
 
