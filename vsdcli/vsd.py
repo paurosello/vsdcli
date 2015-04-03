@@ -27,51 +27,60 @@ class _HelpAction(argparse._HelpAction):
 
 def main(argv=sys.argv):
 
+    default_parser = argparse.ArgumentParser(description="CLI for VSD Software Development Kit", add_help=False)
+    default_parser.add_argument('-v', '--verbose', help='Activate verbose mode', action='store_true')
+    default_parser.add_argument('--username', help='username to get an api key or set `VSD_USERNAME` in your variable environment')
+    default_parser.add_argument('--password', help='password to get an api key or set `VSD_PASSWORD` in your variable environment')
+    default_parser.add_argument('--api', help='URL of the API endpoint or set `VSD_API_URL` in your variable environment')
+    default_parser.add_argument('--version', help='Version of the API or set `VSD_API_VERSION` in your variable environment')
+    default_parser.add_argument('--enterprise', help='Name of the enterprise to connect or set `VSD_ENTERPRISE` in your variable environment')
+    default_parser.add_argument('--json', help='Add this option get a JSON output or set VSD_JSON_OUTPUT="True"', action='store_true')
+
     parser = argparse.ArgumentParser(description="CLI for VSD Software Development Kit", add_help=False)
-    parser.add_argument('--verbose', help='Activate verbose mode', action='store_true')
-    parser.add_argument('--username', help='username to get an api key or set `VSD_USERNAME` in your variable environment')
-    parser.add_argument('--password', help='password to get an api key or set `VSD_PASSWORD` in your variable environment')
-    parser.add_argument('--api', help='URL of the API endpoint or set `VSD_API_URL` in your variable environment')
-    parser.add_argument('--version', help='Version of the API or set `VSD_API_VERSION` in your variable environment')
-    parser.add_argument('--enterprise', help='Name of the enterprise to connect or set `VSD_ENTERPRISE` in your variable environment')
-    parser.add_argument('--json', help='Add this option get a JSON output or set VSD_JSON_OUTPUT="True"', action='store_true')
+#     parser.add_argument('--verbose', help='Activate verbose mode', action='store_true')
+#     parser.add_argument('--username', help='username to get an api key or set `VSD_USERNAME` in your variable environment')
+#     parser.add_argument('--password', help='password to get an api key or set `VSD_PASSWORD` in your variable environment')
+#     parser.add_argument('--api', help='URL of the API endpoint or set `VSD_API_URL` in your variable environment')
+#     parser.add_argument('--version', help='Version of the API or set `VSD_API_VERSION` in your variable environment')
+#     parser.add_argument('--enterprise', help='Name of the enterprise to connect or set `VSD_ENTERPRISE` in your variable environment')
+#     parser.add_argument('--json', help='Add this option get a JSON output or set VSD_JSON_OUTPUT="True"', action='store_true')
     parser.add_argument('-h', '--help', action=_HelpAction, help='help for help if you need some help')
 
     subparsers = parser.add_subparsers(dest="command",
                                        title='All available commands')
 
     # List Command
-    list_parser = subparsers.add_parser('list', description="List all objects")
+    list_parser = subparsers.add_parser('list', description="List all objects", parents=[default_parser])
     list_parser.add_argument('list', help="Name of the VSD object (See command `objects` to list all objects name)")
     list_parser.add_argument('--in', dest='parent_infos', nargs=2, help="Specify the parent name and its uuid")
     list_parser.add_argument('-f', '--filter', dest='filter', help="Specify a filter predicate")
     list_parser.add_argument('-x', '--fields', dest='fields', help="Specify output fields", nargs='+', type=str)
 
     # Show Command
-    show_parser = subparsers.add_parser('show', description="Show a specific object")
+    show_parser = subparsers.add_parser('show', description="Show a specific object", parents=[default_parser])
     show_parser.add_argument('show', help="Name of the object to show (See command `objects` to list all objects name)")
     show_parser.add_argument('-i', '--id', dest='id', help='Identifier of the object to show', required=True)
     show_parser.add_argument('-x', '--fields', dest='fields', help="Specify output fields", nargs='+', type=str)
 
     # Create Command
-    create_parser = subparsers.add_parser('create', description="Create a new object")
+    create_parser = subparsers.add_parser('create', description="Create a new object", parents=[default_parser])
     create_parser.add_argument('create', help='Name of the object to create (See command `objects` to list all objects name)')
     create_parser.add_argument('--in', dest='parent_infos', nargs=2, help="Specify the parent name and its uuid")
     create_parser.add_argument('-p', '--params', dest='params', nargs='*', help='List of Key=Value parameters', required=True)
 
     # Update Command
-    update_parser = subparsers.add_parser('update', description="Update an existing object")
+    update_parser = subparsers.add_parser('update', description="Update an existing object", parents=[default_parser])
     update_parser.add_argument('update', help='Name of the object to update (See command `objects` to list all objects name)')
     update_parser.add_argument('-i', '--id', dest='id', help='Identifier of the object to show', required=True)
     update_parser.add_argument('-p', '--params', dest='params', nargs='*', help='List of Key=Value parameters', required=True)
 
     # Delete Command
-    delete_parser = subparsers.add_parser('delete', description="Delete an existing object")
+    delete_parser = subparsers.add_parser('delete', description="Delete an existing object", parents=[default_parser])
     delete_parser.add_argument('delete', help='Name of the object to update (See command `objects` to list all objects name)')
     delete_parser.add_argument('-i', '--id', dest='id', help='Identifier of the object to show', required=True)
 
     # Resources Command
-    objects_parser = subparsers.add_parser('objects', description="Explore all VSD objects")
+    objects_parser = subparsers.add_parser('objects', description="Explore all VSD objects", parents=[default_parser])
     objects_parser.add_argument('-f', '--filter', dest='filter', help='Filter by name (ex: -f nsg)')
     objects_parser.add_argument('-p', '--parent', dest='parent', help='Filter by parent (ex -p enterprise)')
     objects_parser.add_argument('-c', '--child', dest='child', help='Filter by children (ex: -c domain)')
