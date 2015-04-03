@@ -29,21 +29,14 @@ def main(argv=sys.argv):
 
     default_parser = argparse.ArgumentParser(description="CLI for VSD Software Development Kit", add_help=False)
     default_parser.add_argument('-v', '--verbose', help='Activate verbose mode', action='store_true')
-    default_parser.add_argument('--username', help='username to get an api key or set `VSD_USERNAME` in your variable environment')
-    default_parser.add_argument('--password', help='password to get an api key or set `VSD_PASSWORD` in your variable environment')
+    default_parser.add_argument('--username', help='Username to get an api key or set `VSD_USERNAME` in your variable environment')
+    default_parser.add_argument('--password', help='Password to get an api key or set `VSD_PASSWORD` in your variable environment')
     default_parser.add_argument('--api', help='URL of the API endpoint or set `VSD_API_URL` in your variable environment')
     default_parser.add_argument('--version', help='Version of the API or set `VSD_API_VERSION` in your variable environment')
     default_parser.add_argument('--enterprise', help='Name of the enterprise to connect or set `VSD_ENTERPRISE` in your variable environment')
     default_parser.add_argument('--json', help='Add this option get a JSON output or set VSD_JSON_OUTPUT="True"', action='store_true')
 
     parser = argparse.ArgumentParser(description="CLI for VSD Software Development Kit", add_help=False)
-#     parser.add_argument('--verbose', help='Activate verbose mode', action='store_true')
-#     parser.add_argument('--username', help='username to get an api key or set `VSD_USERNAME` in your variable environment')
-#     parser.add_argument('--password', help='password to get an api key or set `VSD_PASSWORD` in your variable environment')
-#     parser.add_argument('--api', help='URL of the API endpoint or set `VSD_API_URL` in your variable environment')
-#     parser.add_argument('--version', help='Version of the API or set `VSD_API_VERSION` in your variable environment')
-#     parser.add_argument('--enterprise', help='Name of the enterprise to connect or set `VSD_ENTERPRISE` in your variable environment')
-#     parser.add_argument('--json', help='Add this option get a JSON output or set VSD_JSON_OUTPUT="True"', action='store_true')
     parser.add_argument('-h', '--help', action=_HelpAction, help='help for help if you need some help')
 
     subparsers = parser.add_subparsers(dest="command",
