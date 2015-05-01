@@ -38,7 +38,8 @@ class VSDCommand(object):
         try:
             fetcher = getattr(parent, fetcher_name)
         except:
-            Printer.raise_error('%s failed to found fetcher %s' % (parent.rest_name, instance.fetcher_name))
+            parent_name = 'Root' if parent.rest_name == 'me' else parent.rest_name
+            Printer.raise_error('%s failed to found fetcher %s' % (parent_name, fetcher_name))
 
         (fetcher, parent, objects, connection) = fetcher.fetch(filter=args.filter)
 
