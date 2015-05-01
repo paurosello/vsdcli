@@ -38,8 +38,15 @@ class VSDCommand(object):
         try:
             fetcher = getattr(parent, fetcher_name)
         except:
-            parent_name = 'Root' if parent.rest_name == 'me' else parent.rest_name
-            Printer.raise_error('%s failed to found fetcher %s' % (parent_name, fetcher_name))
+
+            if parent.rest_name == 'me':
+                parent_name = 'Root'
+                error_message = '%s failed to found children %s. Maybe you forgot to specify the parent using `--in [parent] [ID]` syntax ?' % (parent_name, fetcher_name)
+            else:
+                parent_name = parent.rest_name
+                error_message = '%s failed to found children %s. You can use command `vsd objects -c %s` to list all possible parents' % (parent_name, fetcher_name, fetcher_name)
+
+            Printer.raise_error(error_message)
 
         (fetcher, parent, objects, connection) = fetcher.fetch(filter=args.filter)
 
