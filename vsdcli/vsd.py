@@ -49,6 +49,13 @@ def main(argv=sys.argv):
     list_parser.add_argument('-f', '--filter', dest='filter', help="Specify a filter predicate")
     list_parser.add_argument('-x', '--fields', dest='fields', help="Specify output fields", nargs='+', type=str)
 
+    # Count Command
+    list_parser = subparsers.add_parser('count', description="Count all objects", parents=[default_parser])
+    list_parser.add_argument('count', help="Name of the VSD object (See command `objects` to list all objects name)")
+    list_parser.add_argument('--in', dest='parent_infos', nargs=2, help="Specify the parent name and its uuid")
+    list_parser.add_argument('-f', '--filter', dest='filter', help="Specify a filter predicate")
+    list_parser.add_argument('-x', '--fields', dest='fields', help="Specify output fields", nargs='+', type=str)
+
     # Show Command
     show_parser = subparsers.add_parser('show', description="Show a specific object", parents=[default_parser])
     show_parser.add_argument('show', help="Name of the object to show (See command `objects` to list all objects name)")

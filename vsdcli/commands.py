@@ -57,6 +57,39 @@ class VSDCommand(object):
         Printer.output(objects, fields=args.fields, json=args.json)
 
     @classmethod
+    def count(cls, args):
+        """ Count all objects
+
+        """
+        inspector = VSDKInspector(args.version)
+        name = Utils.get_singular_name(args.name)
+        instance = inspector.get_vsdk_instance(name)
+        session = inspector.get_user_session(args)
+        parent = inspector.get_vsdk_parent(args.parent_infos, session.user)
+
+        classname = instance.__class__.__name__[2:]
+        plural_classname = Utils.get_plural_name(classname)
+        fetcher_name = Utils.get_python_name(plural_classname)
+
+        try:
+            fetcher = getattr(parent, fetcher_name)
+        except:
+
+            if parent.rest_name == 'me':
+                parent_name = 'Root'
+                error_message = '%s failed to found children %s. Maybe you forgot to specify the parent using `--in [parent] [ID]` syntax ?' % (parent_name, fetcher_name)
+            else:
+                parent_name = parent.rest_name
+                error_message = '%s failed to found children %s. You can use command `vsd objects -c %s` to list all possible parents' % (parent_name, fetcher_name, fetcher_name)
+
+            Printer.raise_error(error_message)
+
+        (fetcher, parent, count) = fetcher.count(filter=args.filter)
+
+        Printer.success('%s %s have been retrieved' % (count, instance.rest_resource_name))
+        Printer.output({instance.rest_resource_name: count}, fields=[instance.rest_resource_name], json=args.json)
+
+    @classmethod
     def show(cls, args):
         """ Show object details
 

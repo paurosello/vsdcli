@@ -64,6 +64,8 @@ Examples:
     (vsd-env) $ vsd list vports --in subnet a3db271b-b4ab-45a2-995e-971bf9e761bb
     (vsd-env) $ vsd show domain --id 04850601-bebb-4b9b-acac-a31b455595a4
 
+    (vsd-env) $ vsd count vports --in subnet 67add3a4-5bd5-42a5-8231-b6710dac3546 -x name
+
     (vsd-env) $ vsd create zone --in domain dd960a1f-b555-4e6c-9bf5-f88832679b5e -p name='Test Zone' IPType=IPV4 numberOfHostsInSubnets=4 maintenanceMode=DISABLED
     (vsd-env) $ vsd create enterprise -p name='My Company'
 
@@ -82,6 +84,7 @@ Available commands
 
 Here are a list of available commands:
 * `list`
+* `count`
 * `show`
 * `create`
 * `update`
