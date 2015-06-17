@@ -12,7 +12,7 @@ from printer import Printer
 class Utils(object):
     """ Utils """
 
-    INVARIANT_RESOURCES = ['qos', 'vrs']
+    INVARIANT_RESOURCES = ['qos', 'vrs', 'cms']
 
     @classmethod
     def _clean_name(cls, string):
