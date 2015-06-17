@@ -48,7 +48,7 @@ class VSDCommand(object):
 
             Printer.raise_error(error_message)
 
-        (fetcher, parent, objects, connection) = fetcher.fetch(filter=args.filter)
+        (fetcher, parent, objects) = fetcher.fetch(filter=args.filter)
 
         if objects is None:
             Printer.raise_error('Could not retrieve. Activate verbose mode for more information')
