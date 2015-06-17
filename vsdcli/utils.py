@@ -186,7 +186,8 @@ class VSDKInspector(object):
             name = parent_infos[0]
             uuid = parent_infos[1]
 
-            parent = self.get_vsdk_instance(name)
+            singular_name = Utils.get_singular_name(name)
+            parent = self.get_vsdk_instance(singular_name)
             parent.id = uuid
 
             try:
