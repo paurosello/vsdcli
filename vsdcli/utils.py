@@ -134,7 +134,6 @@ class VSDKInspector(object):
                 # Printer.info('Imported vsdk.%s from VSPK.' % self._version)
             except ImportError:
                 self._vsdk = importlib.import_module('vsdk')
-                # Printer.info('Imported vsdk %s.' % VSDKInspector.get_installed_version())
             except ImportError as error:
                 Printer.raise_error('Please install requirements using command line `pip install -r requirements.txt`.\n%s' % error)
 
@@ -199,13 +198,6 @@ class VSDKInspector(object):
 
         return user
 
-    @classmethod
-    def get_installed_version(self):
-        """ Get VSDK version
-
-        """
-        return pkg_resources.get_distribution("vsdk").version
-
     def get_user_session(self, args):
         """ Get api key
 
@@ -223,10 +215,11 @@ class VSDKInspector(object):
         try:
             session.start()
         except BambouHTTPError as error:
-            if error.response.status_code == 401:
+            status_code = error.connection.response.status_code
+            if status_code == 401:
                 Printer.raise_error('Could not log in to the VSD %s (API %s) with username=%s password=%s enterprise=%s' % (args.api, args.version, args.username, args.password, args.enterprise))
             else:
-                Printer.raise_error('Cannot access VSD %s. Current vsdk version (%s) tried to connect to the VSD API %s' % (args.api, VSDKInspector.get_installed_version(), args.version))
+                Printer.raise_error('Cannot access VSD %s [HTTP %s]. Current vsdk version tried to connect to the VSD API %s' % (args.api, status_code, args.version))
 
         user = session.user
 
