@@ -1,8 +1,11 @@
+import os
 from setuptools  import setup
+
+version = os.environ.get("VSD_CLI_VERSION", "0.0.1")
 
 setup(
     name='vsdcli',
-    version='0.0.1',
+    version=version,
     author='Christophe Serafin',
     packages=['vsdcli'],
     author_email='christophe.serafin@nuagenetworks.net',
