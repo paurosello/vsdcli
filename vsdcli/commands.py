@@ -44,7 +44,7 @@ class VSDCommand(object):
                 error_message = '%s failed to found children %s. Maybe you forgot to specify the parent using `--in [parent] [ID]` syntax ?' % (parent_name, fetcher_name)
             else:
                 parent_name = parent.rest_name
-                error_message = '%s failed to found children %s. You can use command `vsd objects -c %s` to list all possible parents' % (parent_name, fetcher_name, fetcher_name)
+                error_message = '%s failed to found children %s. You can use command `vsd objects -c %s` to list all possible parents' % (parent_name, name, name)
 
             Printer.raise_error(error_message)
 
