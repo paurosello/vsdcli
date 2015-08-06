@@ -72,6 +72,12 @@ Examples:
     (vsd-env) $ vsd update enterprise -i 26f67b33-3601-4cdf-8ed0-fba7116d0200 -p name='Example'
     (vsd-env) $ vsd update zone -i c4e96631-cfbc-4dcd-a4c3-b2937e5eab13 -p name='Danger Zone'
 
+
+    (vsd-env) $ vsd assign users --ids f30061e8-56dc-47cc-ab9e-cf0d30fe1563 e838617f-658d-41a2-af46-bc54da0055fe --to group 74fb343a-093b-4738-bd59-135dc9e1aa78
+    (vsd-env) $ vsd unassign users --ids f30061e8-56dc-47cc-ab9e-cf0d30fe1563 e838617f-658d-41a2-af46-bc54da0055fe --from group 74fb343a-093b-4738-bd59-135dc9e1aa78
+    (vsd-env) $ vsd reassign users --ids d7162530-6960-43bb-a400-db0dbdeea06e --to group 74fb343a-093b-4738-bd59-135dc9e1aa78
+    (vsd-env) $ vsd reassign users --to group 74fb343a-093b-4738-bd59-135dc9e1aa78  # Remove all users assigned to the specified group
+
     (vsd-env) $ vsd objects                           # List all objects
     (vsd-env) $ vsd objects -f nsg                    # List all objects that contains word nsg
     (vsd-env) $ vsd objects -p enterprise             # List all objects that have an enterprise as parent
@@ -89,4 +95,7 @@ Here are a list of available commands:
 * `create`
 * `update`
 * `delete`
+* `assign` : to add one or multiple assignations to existing ones
+* `unassign`: to remove one or multiple assignations to existing ones
+* `reassign`: to reset all assignation.
 * `objects` will enable you to traverse VSD objects hierarchy

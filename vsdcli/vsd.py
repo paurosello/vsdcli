@@ -87,12 +87,12 @@ def main(argv=sys.argv):
     assign_parser = subparsers.add_parser('unassign', description="Unassign a set of new objects according to their identifier", parents=[default_parser])
     assign_parser.add_argument('unassign', help='Name of the object to unassign (See command `objects` to list all objects name)')
     assign_parser.add_argument('--ids', dest='ids', nargs='*', help='Identifier of the object to unassign', required=True)
-    assign_parser.add_argument('--to', dest='parent_infos', nargs=2, help="Specify the resource name and its uuid", required=True)
+    assign_parser.add_argument('--from', dest='parent_infos', nargs=2, help="Specify the resource name and its uuid", required=True)
 
     # Reassign Command
     assign_parser = subparsers.add_parser('reassign', description="Reassign all objects according to their identifier", parents=[default_parser])
     assign_parser.add_argument('reassign', help='Name of the object to reassign (See command `objects` to list all objects name)')
-    assign_parser.add_argument('--ids', dest='ids', nargs='*', help='Identifier of the object to reassign. If no ids provided, it will reassign all objects')
+    assign_parser.add_argument('--ids', dest='ids', nargs='*', help='Identifier of the object to reassign. If --ids is not specified, it will remove all assigned objects')
     assign_parser.add_argument('--to', dest='parent_infos', nargs=2, help="Specify the resource name and its uuid", required=True)
 
     # Resources Command
