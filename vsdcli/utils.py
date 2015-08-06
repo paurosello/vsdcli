@@ -148,14 +148,15 @@ class VSDKInspector(object):
 
         return resources
 
-    def get_vsdk_instance(self, name):
-        """ Get VSDK object instance according to a given name
+    def get_vsdk_class(self, name):
+        """ Get a VSDK class object
 
             Args:
                 name: the name of the object
 
             Returns:
-                A VSDK object or raise an exception
+                a VSDK class object
+
         """
         if name in self._objects_mapping:
             classname = self._objects_mapping[name]
@@ -166,9 +167,21 @@ class VSDKInspector(object):
             except:
                 Printer.raise_error('Unknown class %s' % classname)
 
-            return klass()
+            return klass
 
         Printer.raise_error('Unknown object named %s' % name)
+
+    def get_vsdk_instance(self, name):
+        """ Get VSDK object instance according to a given name
+
+            Args:
+                name: the name of the object
+
+            Returns:
+                A VSDK object or raise an exception
+        """
+        klass = self.get_vsdk_class(name)
+        return klass()
 
     def get_vsdk_parent(self, parent_infos, user):
         """ Get VSDK parent object if possible
@@ -211,7 +224,7 @@ class VSDKInspector(object):
                 Returns an API Key if everything works fine
         """
         self._set_verbose_mode(args.verbose)
-        session = self._vsdk.NUVSDSession(username=args.username, password=args.password, enterprise=args.enterprise, api_url=args.api, version=args.version)
+        session = self._vsdk.NUVSDSession(username=args.username, password=args.password, enterprise=args.enterprise, api_url=args.api)
         try:
             session.start()
         except BambouHTTPError as error:

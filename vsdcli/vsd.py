@@ -77,6 +77,24 @@ def main(argv=sys.argv):
     delete_parser.add_argument('delete', help='Name of the object to update (See command `objects` to list all objects name)')
     delete_parser.add_argument('-i', '--id', dest='id', help='Identifier of the object to show', required=True)
 
+    # Assign Command
+    assign_parser = subparsers.add_parser('assign', description="Assign a set of new objects according to their identifier", parents=[default_parser])
+    assign_parser.add_argument('assign', help='Name of the object to assign (See command `objects` to list all objects name)')
+    assign_parser.add_argument('--ids', dest='ids', nargs='*', help='Identifier of the object to assign', required=True)
+    assign_parser.add_argument('--to', dest='parent_infos', nargs=2, help="Specify the resource name and its uuid", required=True)
+
+    # Unassign Command
+    assign_parser = subparsers.add_parser('unassign', description="Unassign a set of new objects according to their identifier", parents=[default_parser])
+    assign_parser.add_argument('unassign', help='Name of the object to unassign (See command `objects` to list all objects name)')
+    assign_parser.add_argument('--ids', dest='ids', nargs='*', help='Identifier of the object to unassign', required=True)
+    assign_parser.add_argument('--to', dest='parent_infos', nargs=2, help="Specify the resource name and its uuid", required=True)
+
+    # Reassign Command
+    assign_parser = subparsers.add_parser('reassign', description="Reassign all objects according to their identifier", parents=[default_parser])
+    assign_parser.add_argument('reassign', help='Name of the object to reassign (See command `objects` to list all objects name)')
+    assign_parser.add_argument('--ids', dest='ids', nargs='*', help='Identifier of the object to reassign. If no ids provided, it will reassign all objects')
+    assign_parser.add_argument('--to', dest='parent_infos', nargs=2, help="Specify the resource name and its uuid", required=True)
+
     # Resources Command
     objects_parser = subparsers.add_parser('objects', description="Explore all VSD objects", parents=[default_parser])
     objects_parser.add_argument('-f', '--filter', dest='filter', help='Filter by name (ex: -f nsg)')
