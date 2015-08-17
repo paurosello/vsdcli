@@ -133,9 +133,10 @@ class VSDKInspector(object):
                 self._vsdk = importlib.import_module('vspk.vsdk.%s' % self._version)
                 # Printer.info('Imported vsdk.%s from VSPK.' % self._version)
             except ImportError:
-                self._vsdk = importlib.import_module('vsdk')
-            except ImportError as error:
-                Printer.raise_error('Please install requirements using command line `pip install -r requirements.txt`.\n%s' % error)
+                try:
+                    self._vsdk = importlib.import_module('vsdk')
+                except ImportError as error:
+                    Printer.raise_error('Please install requirements using command line `pip install -r requirements.txt`.\n%s' % error)
 
         return self._vsdk
 
