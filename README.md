@@ -1,11 +1,9 @@
-VSD Command line tool
-=====================
+# VSD Command line tool
 
 CLI for VSD Nuage
 
 
-Setting up your Python environment
-----------------------------------
+## Setting up your Python environment
 
 Install your virtualenv
 
@@ -20,8 +18,7 @@ Activate your environment
     (vsd-env) $ ...
 
 
-Installation
-------------
+## Installation
 
 NOTE: If it is not the case, please activate your Python environment first!
 
@@ -33,8 +30,7 @@ NOTE: If it is not the case, please activate your Python environment first!
 
     (vsd-env) $ chmod +x vsd
 
-Usage
------
+## Usage
 
 Follow the CLI help menu:
 
@@ -85,8 +81,7 @@ Examples:
     (vsd-env) $ vsd objects -p enterprise -c domain   # List all objects that have an enterprise as parent and a domain as child
 
 
-Available commands
-------------------
+### Available commands
 
 Here are a list of available commands:
 * `list`
@@ -101,8 +96,7 @@ Here are a list of available commands:
 * `objects` will enable you to traverse VSD objects hierarchy
 
 
-License
-=======
+## License
 
 Copyright (c) 2015, Alcatel-Lucent Inc
 All rights reserved.
