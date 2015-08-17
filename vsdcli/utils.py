@@ -143,7 +143,7 @@ class VSDKInspector(object):
         """
         self._get_vsdk_package()
 
-        object_names = [name for name in dir(self._vsdk) if name != 'NUVSDSession' and name.startswith('NU') and not name.endswith('Fetcher')]
+        object_names = [name for name in dir(self._vsdk) if name != 'NUVSDSession' and name.startswith('NU') and not name.endswith('Fetcher') and name != 'NURESTModelController']
 
         for object_name in object_names:
             obj = getattr(self._vsdk, object_name)
