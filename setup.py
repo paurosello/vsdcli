@@ -28,7 +28,7 @@
 import os
 from setuptools  import setup
 
-version = os.environ.get("VSD_CLI_VERSION", "1.0.0")
+version = os.environ.get("VSD_CLI_VERSION", "1.0.0.1")
 
 setup(
     name='vsdcli',
