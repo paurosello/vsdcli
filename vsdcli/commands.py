@@ -78,7 +78,8 @@ class VSDCommand(object):
         if objects is None:
             Printer.raise_error('Could not retrieve. Activate verbose mode for more information')
 
-        Printer.success('%s %s have been retrieved' % (len(objects), instance.rest_resource_name))
+        if not args.json:
+            Printer.success('%s %s have been retrieved' % (len(objects), instance.rest_resource_name))
         Printer.output(objects, fields=args.fields, json=args.json)
 
     @classmethod
@@ -111,7 +112,8 @@ class VSDCommand(object):
 
         (fetcher, parent, count) = fetcher.count(filter=args.filter)
 
-        Printer.success('%s %s have been retrieved' % (count, instance.rest_resource_name))
+        if not args.json:
+            Printer.success('%s %s have been retrieved' % (count, instance.rest_resource_name))
         Printer.output({instance.rest_resource_name: count}, fields=[instance.rest_resource_name], json=args.json)
 
     @classmethod
@@ -138,7 +140,8 @@ class VSDCommand(object):
         except Exception, e:
             Printer.raise_error('Could not find %s with id `%s`. Activate verbose mode for more information:\n%s' % (name, args.id, e))
 
-        Printer.success('%s with id %s has been retrieved' % (name, args.id))
+        if not args.json:
+            Printer.success('%s with id %s has been retrieved' % (name, args.id))
         Printer.output(instance, fields=args.fields, json=args.json, headers={'Attribute', 'Value'})
 
     @classmethod
@@ -160,7 +163,8 @@ class VSDCommand(object):
         except Exception, e:
             Printer.raise_error('Cannot create %s:\n%s' % (name, e))
 
-        Printer.success('%s has been created with ID=%s' % (name, instance.id))
+        if not args.json:
+            Printer.success('%s has been created with ID=%s' % (name, instance.id))
         Printer.output(instance, json=args.json)
 
     @classmethod
@@ -189,7 +193,8 @@ class VSDCommand(object):
         except Exception, e:
             Printer.raise_error('Cannot update %s:\n%s' % (name, e))
 
-        Printer.success('%s with ID=%s has been updated' % (name, instance.id))
+        if not args.json:
+            Printer.success('%s with ID=%s has been updated' % (name, instance.id))
         Printer.output(instance, json=args.json)
 
     @classmethod
@@ -355,7 +360,8 @@ class VSDCommand(object):
 
         objects.sort()
 
-        Printer.success('%s objects found.' % len(objects))
+        if not args.json:
+            Printer.success('%s objects found.' % len(objects))
         Printer.output(objects, json=args.json, headers={'Name'})
 
     ### General methods
