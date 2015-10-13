@@ -2,6 +2,12 @@
 
 CLI for VSD Nuage
 
+This repository contains a fully generated VSD-CLI.
+To get a local copy of the latest VSD-CLI, it is recommended to use the VSPKGenerator (https://github.com/nuagenetworks/vspkgenerator)
+or to install it directly from the PIP repository :
+
+	pip install vsdcli
+
 
 ## Setting up your Python environment
 
