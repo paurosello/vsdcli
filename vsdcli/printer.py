@@ -167,6 +167,9 @@ class Printer(object):
         """ Get object dictionnary with filtered fields
 
         """
+        if type(obj) is str:
+            return obj
+
         default_dict = obj.to_dict()
 
         if fields is None or 'ALL' in fields:
